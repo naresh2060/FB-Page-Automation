@@ -1,8 +1,8 @@
 import express from 'express';
 import Post from '../../models/Post.js'
 
-import { generatePostContent, generateImagePrompt } from '../../services/geminiService.js'
-import { postToPage } from '../../services/facebookServices.js';
+import { generatePostAndPrompt } from '../../services/geminiService.js'
+import { postToPage, uploadPhoto } from '../../services/facebookServices.js';
 import { generateImage } from '../../services/huggingfaceService.js';
 
 const router = express.Router();
@@ -18,37 +18,35 @@ router.post('/generate', async (req, res) => {
     //Create inital post record
     post = new Post({ topic, content: '', imageUrl: '' })
 
-    //step 1: Generate Post content
+    //step 1: Generate Post content and Image Generation Prompt
     console.log("Generating post content...");
-    const content = await generatePostContent(topic);
+    const {content, imagePrompt} = await generatePostAndPrompt(topic);
 
-    if (!content) {
-      throw new Error("Failed to generate post content");
+    if (!content || !imagePrompt) {
+      throw new Error("Failed to generate content");
     }
-    console.log(`Content: ${content}`);
-    post.content = content;
 
-    //step 2: Generate Image Prompt
-    // const imagePrompt = await generateImagePrompt(topic);
-    // post.imagePrompt = imagePrompt;
-    // console.log(`Image prompt: ${imagePrompt}`);
+    post.content = content;
+    post.imagePrompt = imagePrompt;
+
+  
 
     //step 3: Generate Image
-    // console.log("Generating Image...");
-    // const image = await generateImage(imagePrompt);
+    console.log("Generating Image...");
+    const image = await generateImage(imagePrompt);
 
 
     //step 4:  Upload to facebook
-    // console.log("Uploading to Facebook...");
-    // const photoId = await uploadPhoto(image.buffer);
+    console.log("Uploading to Facebook...");
+    const photoId = await uploadPhoto(image.buffer);
 
     //step 5: Post to facebook
     console.log("Posting to Facebook Page...");
-    const facebookPostId = await postToPage(content);
+    const facebookPostId = await postToPage(content, photoId);
 
     //Update post record
     post.facebookPostId = facebookPostId;
-    // post.imageUrl = `data:image/png;base64,${image.base64}`;
+    post.imageUrl = `data:image/png;base64,${image.base64}`;
     post.status = 'posted';
     post.postedAt = new Date();
 
