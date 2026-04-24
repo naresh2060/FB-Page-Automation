@@ -17,7 +17,7 @@ const ChannelCard = ({ platform, value, change, color }) => (
     </div>
   </div>
 );
-
+  
 const Dashboard = () => {
   const channels = [
     { platform: 'Facebook', value: '18.4K', change: 9, color: '#1877F2' },

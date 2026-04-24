@@ -1,40 +1,34 @@
 import React, { useState } from 'react';
-import { 
-  MoreHorizontal, 
-  TrendingUp, 
-  TrendingDown, 
-  ExternalLink,
-  Plus,
-  Image,
+import {
+  TrendingUp,
+  TrendingDown,
   Video,
   Clock,
   MessageCircle,
   Eye,
   ThumbsUp,
-  Share2,
-  Calendar,
   Sparkles,
-  Search
 } from 'lucide-react';
 import './FacebookDashboard.css';
 import ConnectFacebookModal from '../../components/Modals/ConnectFacebookModal';
+import usePlatformStore from '../../store/usePlatformStore';
 
 const FacebookIcon = ({ size = 32, fill = "none", color = "currentColor" }) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill={fill} 
-    stroke={color} 
-    strokeWidth="2" 
-    strokeLinecap="round" 
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill={fill}
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
     strokeLinejoin="round"
   >
     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
   </svg>
 );
 
-const StatCard = ({ label, value, trend, trendValue, isPositive }) => (
+const StatCard = ({ label, value, trendValue, isPositive }) => (
   <div className="fb-stat-card">
     <div className="fb-stat-label">{label}</div>
     <div className="fb-stat-value">{value}</div>
@@ -48,11 +42,23 @@ const StatCard = ({ label, value, trend, trendValue, isPositive }) => (
 const FacebookDashboard = () => {
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
 
+  // ── Live store data ──────────────────────────────────────────
+  const { status, pageInfo } = usePlatformStore();
+  const isConnected = status === "connected";
+
+  // ── Stats — followers pulled from pageInfo when connected ────
   const stats = [
-    { label: 'Page followers', value: '18.4K', trendValue: '+312', isPositive: true },
-    { label: 'Post reach', value: '42.1K', trendValue: '+9%', isPositive: true },
-    { label: 'Engagement rate', value: '5.2%', trendValue: '+0.8% vs avg', isPositive: true },
-    { label: 'Link clicks', value: '1,830', trendValue: '-4%', isPositive: false },
+    {
+      label: 'Page followers',
+      value: isConnected && pageInfo
+        ? pageInfo.fanCount.toLocaleString()
+        : '18.4K',
+      trendValue: '+312',
+      isPositive: true,
+    },
+    { label: 'Post reach',      value: '42.1K', trendValue: '+9%',          isPositive: true },
+    { label: 'Engagement rate', value: '5.2%',  trendValue: '+0.8% vs avg', isPositive: true },
+    { label: 'Link clicks',     value: '1,830', trendValue: '-4%',          isPositive: false },
   ];
 
   const recentPosts = [
@@ -63,7 +69,7 @@ const FacebookDashboard = () => {
       likes: '148',
       status: 'Live',
       icon: <Video size={18} />,
-      color: '#1877F2'
+      color: '#1877F2',
     },
     {
       type: 'Sched.',
@@ -72,7 +78,7 @@ const FacebookDashboard = () => {
       likes: '-',
       status: 'Scheduled',
       icon: <Clock size={18} />,
-      color: '#1877F2'
+      color: '#1877F2',
     },
     {
       type: 'Draft',
@@ -81,39 +87,60 @@ const FacebookDashboard = () => {
       likes: '-',
       status: 'Needs review',
       icon: <MessageCircle size={18} />,
-      color: '#e4e6eb'
-    }
+      color: '#e4e6eb',
+    },
   ];
 
   const audienceData = [
     { range: '25-34 yrs', percentage: 38 },
     { range: '35-44 yrs', percentage: 27 },
     { range: '18-24 yrs', percentage: 21 },
-    { range: '45+ yrs', percentage: 14 },
+    { range: '45+ yrs',   percentage: 14 },
   ];
 
   return (
     <div className="fb-dashboard">
-      {/* Header section */}
+
+      {/* ── Header ── */}
       <header className="fb-header">
         <div className="fb-header-main">
+
+          {/* Avatar — page picture if connected, FB icon otherwise */}
           <div className="fb-brand-avatar">
-            <FacebookIcon fill="#1877F2" color="#1877F2" size={32} />
+            {isConnected && pageInfo?.picture ? (
+              <img
+                src={pageInfo.picture}
+                alt={pageInfo.name}
+                style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
+              />
+            ) : (
+              <FacebookIcon fill="#1877F2" color="#1877F2" size={32} />
+            )}
           </div>
+
+          {/* Brand name + meta */}
           <div className="fb-brand-details">
-            <div className="fb-brand-name">YourBrand — Facebook</div>
+            <div className="fb-brand-name">
+              {isConnected && pageInfo?.name
+                ? `${pageInfo.name} — Facebook`
+                : 'YourBrand — Facebook'}
+            </div>
             <div className="fb-brand-stats">
-              18,400 followers · 2,405 page likes · Last synced 2 min ago
+              {isConnected && pageInfo
+                ? `${pageInfo.fanCount.toLocaleString()} followers · ${pageInfo.category || 'Facebook Page'} · Just connected`
+                : '18,400 followers · 2,405 page likes · Last synced 2 min ago'}
             </div>
           </div>
-          <button 
+
+          {/* Connect / Reconnect button */}
+          <button
             className="fb-connect-btn"
             onClick={() => setIsConnectModalOpen(true)}
           >
-            Connect
+            {isConnected ? 'Reconnect' : 'Connect'}
           </button>
         </div>
-        
+
         <nav className="fb-tabs">
           <button className="fb-tab active">Overview</button>
           <button className="fb-tab">Posts</button>
@@ -123,11 +150,11 @@ const FacebookDashboard = () => {
         </nav>
       </header>
 
-      {/* Content grid */}
+      {/* ── Content grid ── */}
       <div className="fb-grid">
-        {/* Left column + Middle column area */}
         <div className="fb-main-col">
-          {/* Stats Row */}
+
+          {/* Stats row */}
           <div className="fb-stats-row">
             {stats.map((stat, idx) => (
               <StatCard key={idx} {...stat} />
@@ -135,6 +162,7 @@ const FacebookDashboard = () => {
           </div>
 
           <div className="fb-secondary-grid">
+
             {/* Post performance chart */}
             <div className="fb-card fb-performance-card">
               <div className="fb-card-header">
@@ -145,8 +173,10 @@ const FacebookDashboard = () => {
                 <div className="fb-bar-chart">
                   {[40, 60, 35, 75, 55, 65, 50].map((h, i) => (
                     <div key={i} className="fb-bar-wrapper">
-                      <div className="fb-bar" style={{ height: `${h}%` }}></div>
-                      <span className="fb-bar-label">{['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i]}</span>
+                      <div className="fb-bar" style={{ height: `${h}%` }} />
+                      <span className="fb-bar-label">
+                        {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i]}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -162,13 +192,18 @@ const FacebookDashboard = () => {
               <div className="fb-posts-list">
                 {recentPosts.map((post, idx) => (
                   <div key={idx} className="fb-post-item">
-                    <div className="fb-post-icon" style={{ backgroundColor: post.color + '20', color: post.color }}>
+                    <div
+                      className="fb-post-icon"
+                      style={{ backgroundColor: post.color + '20', color: post.color }}
+                    >
                       {post.icon}
                     </div>
                     <div className="fb-post-info">
                       <div className="fb-post-top">
                         <span className="fb-post-title">5 Mi...</span>
-                        <span className={`fb-post-badge ${post.status.toLowerCase()}`}>{post.status}</span>
+                        <span className={`fb-post-badge ${post.status.toLowerCase()}`}>
+                          {post.status}
+                        </span>
                       </div>
                       <div className="fb-post-time">{post.time}</div>
                       <div className="fb-post-stats">
@@ -183,8 +218,49 @@ const FacebookDashboard = () => {
           </div>
         </div>
 
-        {/* Right sidebar */}
+        {/* ── Right sidebar ── */}
         <div className="fb-sidebar-col">
+
+          {/* Connected page card — only shown when connected */}
+          {isConnected && pageInfo && (
+            <div className="fb-card fb-connected-card">
+              <div className="fb-card-header">
+                <h3>Connected page</h3>
+              </div>
+              <div className="fb-connected-info">
+                {pageInfo.picture && (
+                  <img
+                    src={pageInfo.picture}
+                    alt={pageInfo.name}
+                    className="fb-connected-avatar"
+                  />
+                )}
+                <div>
+                  <div className="fb-connected-name">{pageInfo.name}</div>
+                  <div className="fb-connected-meta">
+                    {pageInfo.category && <span>{pageInfo.category}</span>}
+                    {pageInfo.fanCount > 0 && (
+                      <span> · {pageInfo.fanCount.toLocaleString()} followers</span>
+                    )}
+                  </div>
+                  {pageInfo.verified && (
+                    <span className="fb-verified-badge">✓ Verified</span>
+                  )}
+                  {pageInfo.link && (
+                    <a
+                      href={pageInfo.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="fb-page-link"
+                    >
+                      View page ↗
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Quick composer */}
           <div className="fb-card fb-composer-card">
             <div className="fb-card-header">
@@ -224,7 +300,10 @@ const FacebookDashboard = () => {
                     <span>{item.percentage}%</span>
                   </div>
                   <div className="fb-progress-bar">
-                    <div className="fb-progress-fill" style={{ width: `${item.percentage}%` }}></div>
+                    <div
+                      className="fb-progress-fill"
+                      style={{ width: `${item.percentage}%` }}
+                    />
                   </div>
                 </div>
               ))}
@@ -253,7 +332,7 @@ const FacebookDashboard = () => {
             </div>
             <div className="fb-activity-list">
               <div className="fb-activity-item">
-                <div className="fb-activity-avatar"></div>
+                <div className="fb-activity-avatar" />
                 <div className="fb-activity-info">
                   <p>New comment on "5 Mistakes every..."</p>
                   <span>2m</span>
@@ -264,9 +343,11 @@ const FacebookDashboard = () => {
         </div>
       </div>
 
-      <ConnectFacebookModal 
-        isOpen={isConnectModalOpen} 
-        onClose={() => setIsConnectModalOpen(false)} 
+      {/* ── Modal ── */}
+      <ConnectFacebookModal
+        isOpen={isConnectModalOpen}
+        onClose={() => setIsConnectModalOpen(false)}
+        onConnected={() => setIsConnectModalOpen(false)}
       />
     </div>
   );

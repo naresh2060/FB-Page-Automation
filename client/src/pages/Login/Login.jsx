@@ -1,56 +1,46 @@
-import React, {  useState } from 'react';
-import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
-import { 
-  Eye, 
-  EyeOff, 
-  ArrowRight, 
-  Mail, 
-  ShieldCheck, 
-  Sparkles 
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import './Login.css';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import useAuthStore from "../../store/useAuthStore";
+import {
+  Eye,
+  EyeOff,
+  ArrowRight,
+  Mail,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import "./Login.css";
 
 const Login = () => {
+  const { login, isLoading, error, clearError } = useAuthStore();
+
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    // Validation 
-    if(!email || !password) {
-       setError('All fields are required');
-      setLoading(false);
+    // Validation
+    if (!email || !password) {
+      error("All fields are required");
+      isLoading(false);
       return;
     }
 
-    // API call
+    // login({ email, password });
+    // store handles everything from here
+    // on success → isLoggedIn = true → ProtectedLayout lets user through
+    // on failure → error = "Invalid credentials"
+
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/auth/login`,{
-        email:email,
-        password: password,
-      });
-      const { token, user } = response.data;
+      await login({ email, password }); // ⏳ wait for login
 
-       // ✅ Store token and user in localStorage
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-
-       // ✅ Redirect to dashboard
-      navigate('/dashboard');
-    } catch (error) { 
-            setError(error.response?.data?.error || 'Login failed. Please try again.');
-    } finally {
-            setLoading(false);
+      navigate("/dashboard"); // ✅ only after success
+    } catch (err) {
+      // ❌ login failed
+      console.log(err);
     }
   };
 
@@ -71,9 +61,9 @@ const Login = () => {
           <span>R</span>
           <span>E</span>
         </div>
-        
+
         <div className="left-content">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -83,7 +73,7 @@ const Login = () => {
             <span>POWERED BY LUMINOUS INTELLIGENCE</span>
           </motion.div>
 
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -99,12 +89,12 @@ const Login = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="description"
           >
-            Join over 2,000+ creators and businesses optimizing their 
-            digital workflow with real-time predictive analysis.
+            Join over 2,000+ creators and businesses optimizing their digital
+            workflow with real-time predictive analysis.
           </motion.p>
 
           <div className="stats-container">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
@@ -113,8 +103,8 @@ const Login = () => {
               <h3 className="stat-value">98%</h3>
               <p className="stat-label">Efficiency Increase</p>
             </motion.div>
-            
-            <motion.div 
+
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
@@ -125,7 +115,7 @@ const Login = () => {
             </motion.div>
           </div>
         </div>
-        
+
         <div className="glow-effect"></div>
       </div>
 
@@ -134,7 +124,7 @@ const Login = () => {
         <header className="right-header">
           <div className="logo">
             <span className="logo-text">SocialFlow AI</span>
-          </div >
+          </div>
           <div className="header-link">
             New here? <Link to="/signup">Create account</Link>
           </div>
@@ -149,17 +139,53 @@ const Login = () => {
           <div className="social-login">
             <button type="button" className="social-btn">
               <svg viewBox="0 0 24 24" width="20" height="20">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
               </svg>
             </button>
             <button type="button" className="social-btn" title="GitHub">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+              </svg>
             </button>
             <button type="button" className="social-btn" title="Twitter">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
+              </svg>
             </button>
           </div>
 
@@ -171,9 +197,9 @@ const Login = () => {
             <div className="input-group">
               <label>Email address</label>
               <div className="input-wrapper">
-                <input 
-                  type="email" 
-                  placeholder="name@company.com" 
+                <input
+                  type="email"
+                  placeholder="name@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -184,15 +210,15 @@ const Login = () => {
             <div className="input-group">
               <label>Password</label>
               <div className="input-wrapper">
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  placeholder="••••••••" 
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="toggle-password"
                   onClick={() => setShowPassword(!showPassword)}
                 >
@@ -207,7 +233,13 @@ const Login = () => {
                 <span className="checkmark"></span>
                 Remember me
               </label>
-              <Link to="/forgot-password" title="Forgot Password" className="forgot-link">Forgot password?</Link>
+              <Link
+                to="/forgot-password"
+                title="Forgot Password"
+                className="forgot-link"
+              >
+                Forgot password?
+              </Link>
             </div>
 
             <button type="submit" className="submit-btn">
@@ -221,7 +253,10 @@ const Login = () => {
             </div>
             <div className="security-text">
               <h4>Enterprise Security Enabled</h4>
-              <p>Your session is protected by AES-256 encryption and multi-factor authentication protocols.</p>
+              <p>
+                Your session is protected by AES-256 encryption and multi-factor
+                authentication protocols.
+              </p>
             </div>
           </div>
         </main>

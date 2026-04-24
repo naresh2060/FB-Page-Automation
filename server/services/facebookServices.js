@@ -4,6 +4,69 @@ import FormData from 'form-data';
 const PAGE_ID = process.env.FACEBOOK_PAGE_ID;
 const ACCESS_TOKEN = process.env.FACEBOOK_ACCESS_TOKEN;
 const BASE_URL = `https://graph.facebook.com/v18.0`;
+const GRAPH = "https://graph.facebook.com/v19.0";
+
+
+// ── parse FB error cleanly ───────────────────────────────────────
+const parseFbError = (error) => {
+  const fb = error.response?.data?.error;
+  return {
+    code:    fb?.code    || 0,
+    type:    fb?.type    || "GraphAPIError",
+    message: fb?.message || "Facebook API error",
+    subcode: fb?.error_subcode || null,
+  };
+};
+ 
+// ── 1. Debug token — checks validity, expiry, scopes ─────────────
+export const debugToken = async (inputToken) => {
+  try {
+    const appToken = `${process.env.FB_APP_ID}|${process.env.FB_APP_SECRET}`;
+    const { data } = await axios.get(`${GRAPH}/debug_token`, {
+      params: { input_token: inputToken, access_token: appToken },
+    });
+    return data.data;
+    // { is_valid, expires_at, scopes, app_id, user_id, issued_at }
+  } catch (err) {
+    throw parseFbError(err);
+  }
+};
+ 
+// ── 2. Get all pages token owner manages ─────────────────────────
+export const getUserPages = async (accessToken) => {
+  try {
+    const { data } = await axios.get(`${GRAPH}/me/accounts`, {
+      params: {
+        access_token: accessToken,
+        fields: "id,name,category,tasks,access_token",
+        limit: 100,
+      },
+    });
+    return data.data;
+    // [ { id, name, category, tasks, access_token } ]
+  } catch (err) {
+    throw parseFbError(err);
+  }
+};
+ 
+// ── 3. Get specific page details ──────────────────────────────────
+export const getPageDetails = async (pageId, accessToken) => {
+  try {
+    const { data } = await axios.get(`${GRAPH}/${pageId}`, {
+      params: {
+        access_token: accessToken,
+        fields: "id,name,category,fan_count,picture,verification_status,link",
+      },
+    });
+    return data;
+    // { id, name, category, fan_count, picture, verification_status }
+  } catch (err) {
+    throw parseFbError(err);
+  }
+};
+
+
+
 
 // ─── Upload Photo (unpublished) ───────────────────────────────────────────────
 export const uploadPhoto = async (imageBuffer) => {

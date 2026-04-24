@@ -9,6 +9,7 @@ import postsRouter from './api/posts/posts.js';
 import authRoutes from './api/auth/auth.js';
 import { authenticate } from './middlewares/authenticate.js';
 import postRoutes from './api/posts/posts.js';        // ✅ add this
+import platformRoutes from './api/platforms/platformRoutes.js'
 
 
 const app = express();
@@ -24,6 +25,8 @@ app.use(express.urlencoded({ extended: true }));
 //Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', authenticate, postRoutes); // ✅ protect post routes
+app.use('/api/platforms',platformRoutes );
+
 
 app.get('/', (req, res) => {
   res.send("Hello");

@@ -13,7 +13,7 @@ const usePlatformStore = create((set) => ({
   checkFacebook: async ({ pageId, accessToken }) => {
     set({ status: "checking", error: null, pageInfo: null, tokenInfo: null });
     try {
-      const data = await api.post("/platforms/check-fb-connection", {
+      const data = await api.post("/api/platforms/check-fb-connection", {
         pageId,
         accessToken,
       });
