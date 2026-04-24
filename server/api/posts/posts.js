@@ -4,6 +4,7 @@ import Post from '../../models/Post.js'
 import { generatePostAndPrompt } from '../../services/geminiService.js'
 import { postToPage, uploadPhoto } from '../../services/facebookServices.js';
 import { generateImage } from '../../services/huggingfaceService.js';
+import { uploadToCloudinary } from '../../services/cloudinaryService.js';
 
 const router = express.Router();
 
@@ -31,12 +32,16 @@ router.post('/generate', async (req, res) => {
 
   
 
-    //step 3: Generate Image
+    //step 2: Generate Image
     console.log("Generating Image...");
     const image = await generateImage(imagePrompt);
 
+    // step 3: Upload to cloudianary
+    console.log("Uploading image to Cloudinary...");
+    const cloudinaryResult = await uploadToCloudinary(image.buffer);
+    post.imageUrl = cloudinaryResult.secure_url; 
 
-    //step 4:  Upload to facebook
+    //step 4:  Upload image buffer to Facebook
     console.log("Uploading to Facebook...");
     const photoId = await uploadPhoto(image.buffer);
 
@@ -46,7 +51,7 @@ router.post('/generate', async (req, res) => {
 
     //Update post record
     post.facebookPostId = facebookPostId;
-    post.imageUrl = `data:image/png;base64,${image.base64}`;
+    // post.imageUrl = `data:image/png;base64,${image.base64}`;
     post.status = 'posted';
     post.postedAt = new Date();
 

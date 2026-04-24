@@ -1,0 +1,24 @@
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+}
+
+.content-layout {
+  display: flex;
+  flex: 1;
+  background-color: var(--bg-main);
+}
+
+@media (max-width: 1280px) {
+  .right-panel {
+    display: none;
+  }
+}

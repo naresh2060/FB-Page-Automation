@@ -1,0 +1,69 @@
+.intelligence-card {
+  margin-top: 32px;
+  background-color: white;
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.intelligence-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.intelligence-content {
+  flex: 1;
+}
+
+.intelligence-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--text-main);
+}
+
+.intelligence-text {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.text-highlight {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.intelligence-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.dismiss-btn {
+  padding: 10px 24px;
+  border-radius: var(--radius-md);
+  background-color: #f1f5f9;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.apply-btn {
+  padding: 10px 24px;
+  border-radius: var(--radius-md);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.apply-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}

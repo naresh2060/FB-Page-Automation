@@ -6,6 +6,10 @@ import express from 'express';
 import cors from 'cors';
 import connectDB from './config/db.js';
 import postsRouter from './api/posts/posts.js';
+import authRoutes from './api/auth/auth.js';
+import { authenticate } from './middlewares/authenticate.js';
+import postRoutes from './api/posts/posts.js';        // ✅ add this
+
 
 const app = express();
 
@@ -18,7 +22,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //Routes
-app.use('/api/posts', postsRouter);
+app.use('/api/auth', authRoutes);
+app.use('/api/posts', authenticate, postRoutes); // ✅ protect post routes
 
 app.get('/', (req, res) => {
   res.send("Hello");
