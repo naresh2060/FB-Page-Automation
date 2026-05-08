@@ -104,4 +104,21 @@ router.get('/me', authenticate, async (req, res) => {
   }
 });
 
+// ─── Logout ──────────────────────────────────────────────────
+router.post('/logout', (req, res) => {
+  res.json({ success: true, message: 'Logged out successfully' });
+});
+
+// ─── Forgot Password ─────────────────────────────────────────
+router.post('/forgot-password', async (req, res) => {
+  // Placeholder logic
+  res.json({ success: true, message: 'If that email exists, a reset link has been sent' });
+});
+
+// ─── Reset Password ──────────────────────────────────────────
+router.post('/reset-password', async (req, res) => {
+  // Placeholder logic
+  res.json({ success: true, message: 'Password reset successfully' });
+});
+
 export default router;

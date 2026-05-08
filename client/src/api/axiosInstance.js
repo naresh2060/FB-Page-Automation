@@ -27,10 +27,14 @@ api.interceptors.response.use(
 
     // Don't auto-logout on 401 for Facebook connection endpoint
     // (401 here means Facebook token issues, not JWT issues)
-    if (status === 401 && !url?.includes('/check-fb-connection')) {
+    if (status === 401 && !url?.includes('/facebook/connect') && !url?.includes('/check-fb-connection')) {
       // token expired → log out automatically
       useAuthStore.getState().logout();
       window.location.href = "/login";
+    }
+
+    if (!error.response) {
+      console.error("Network Error: Please check if the backend server is running and accessible at " + api.defaults.baseURL);
     }
 
     if (status === 403) {
@@ -40,7 +44,6 @@ api.interceptors.response.use(
     if (status === 500) {
       console.error("Server error");
     }
-
 
     return Promise.reject(error.response?.data || error);
   }

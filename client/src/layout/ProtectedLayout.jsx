@@ -5,39 +5,36 @@ import Header from '../components/Header/Header';
 import RightPanel from '../components/RightPanel/RightPanel';
 import CreatePostModal from '../components/Modals/CreatePostModal';
 import RefineModal from '../components/Modals/RefineModal';
+import usePostStore from '../store/usePostStore';
+import useAuthStore from '../store/useAuthStore';
 
 const ProtectedLayout = () => {
-  // Mock authentication state - in a real app, this would come from a Context or Redux
-  const [isAuthenticated] = useState(true); 
-  
-  // Modal states
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const { isLoggedIn, checkAuth, isLoading } = useAuthStore();
+  const { openCreate } = usePostStore();
+  const location = useLocation();
+  const [authChecked, setAuthChecked] = useState(false);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
-  
-  const openPreview = () => {
-    setIsModalOpen(false);
-    setIsPreviewOpen(true);
-  };
-  
-  const handleGenerate = () => {
-    openPreview();
-  };
-   
-  const closePreview = () => setIsPreviewOpen(false);
+  React.useEffect(() => {
+    const initAuth = async () => {
+      await checkAuth();
+      setAuthChecked(true);
+    };
+    initAuth();
+  }, [checkAuth]);
 
-  if (!isAuthenticated) {
+  const isDashboard = ['/dashboard', '/', '/channels/facebook', '/content'].includes(location.pathname);
+
+  if (!authChecked || isLoading) {
+    return <div>Loading...</div>; // Or a spinner
+  }
+
+  if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
 
-  const location = useLocation();
-  const isDashboard = ['/dashboard', '/', '/channels/facebook'].includes(location.pathname);
-
   return (
     <div className="app-container">
-      <Sidebar onCreatePost={openModal} />
+      <Sidebar onCreatePost={openCreate} />
       <main className="main-content">
         {!isDashboard && <Header />}
         <div className="content-layout">
@@ -46,15 +43,8 @@ const ProtectedLayout = () => {
         </div>
       </main>
       
-      <CreatePostModal 
-        isOpen={isModalOpen} 
-        onClose={closeModal} 
-        onGenerate={handleGenerate} 
-      />
-      <RefineModal 
-        isOpen={isPreviewOpen} 
-        onClose={closePreview} 
-      />
+      <CreatePostModal />
+      <RefineModal />
     </div>
   );
 };

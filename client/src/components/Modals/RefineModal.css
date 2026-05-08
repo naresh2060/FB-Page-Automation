@@ -1,13 +1,22 @@
 .refine-modal {
   max-width: 900px !important;
+  max-height: 90vh !important;
   padding: 0 !important;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .refine-modal .modal-header {
-  padding: 32px 40px 24px;
+  padding: 24px 40px 20px;
   border-bottom: 1px solid #f1f5f9;
   margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.refine-modal .modal-body {
+  overflow-y: auto;
+  flex-grow: 1;
 }
 
 .modal-content-grid {
@@ -63,6 +72,36 @@
   padding: 32px;
   border-radius: var(--radius-lg);
   border: 1px solid #f1f5f9;
+  height: 320px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
+}
+
+.content-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content-box::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.content-box::-webkit-scrollbar-thumb {
+  background-color: #e2e8f0;
+  border-radius: 20px;
+}
+
+.editable-textarea {
+  width: 100%;
+  border: 1px solid #f1f5f9;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.editable-textarea:focus {
+  border-color: #cbd5e1;
 }
 
 .content-box p {
@@ -174,6 +213,7 @@
   background-color: white;
   border-top: 1px solid #f1f5f9;
   margin-top: 0 !important;
+  flex-shrink: 0;
 }
 
 .regenerate-link {
@@ -232,3 +272,124 @@
   font-weight: 700;
   font-size: 14px;
 }
+
+/* ── Prompt section header ── */
+.prompt-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+/* ── Edit prompt button ── */
+.edit-prompt-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 0.5px solid #d1d5db;
+  background: white;
+  cursor: pointer;
+  color: #374151;
+  transition: background 0.15s;
+}
+
+.edit-prompt-btn:hover { background: #f3f4f6; }
+
+/* ── Editable prompt textarea ── */
+.prompt-textarea {
+  width: 100%;
+  font-size: 13px;
+  color: #374151;
+  border: 0.5px solid #6366f1;
+  border-radius: 6px;
+  padding: 8px;
+  resize: none;
+  font-family: inherit;
+  line-height: 1.5;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* ── Image preview box ── */
+.image-preview-box {
+  border: 0.5px solid #e5e7eb;
+  border-radius: 10px;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ── Loading state ── */
+.image-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  color: #6b7280;
+}
+
+.image-loading p    { font-size: 13px; font-weight: 500; margin: 0; }
+.image-loading span { font-size: 12px; }
+
+.spin-icon { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Error state ── */
+.image-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+}
+
+.image-error p { font-size: 13px; color: #dc2626; text-align: center; }
+
+.retry-btn {
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 0.5px solid #dc2626;
+  color: #dc2626;
+  background: white;
+  cursor: pointer;
+}
+
+/* ── Generated image ── */
+.image-ready {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.generated-image {
+  width: 100%;
+  border-radius: 8px;
+  display: block;
+  object-fit: cover;
+}
+
+.regenerate-img-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  padding: 6px;
+  border-radius: 6px;
+  border: 0.5px solid #d1d5db;
+  background: white;
+  cursor: pointer;
+  color: #374151;
+  width: 100%;
+  transition: background 0.15s;
+}
+
+.regenerate-img-btn:hover { background: #f3f4f6; }

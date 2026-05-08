@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 import "./Login.css";
 
 const Login = () => {
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const { login, isLoading, error, setError, clearError } = useAuthStore();
 
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -24,8 +24,7 @@ const Login = () => {
     e.preventDefault();
     // Validation
     if (!email || !password) {
-      error("All fields are required");
-      isLoading(false);
+      setError("All fields are required");
       return;
     }
 
@@ -194,6 +193,16 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="login-form">
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="error-message"
+                style={{ color: '#ff4d4d', fontSize: '14px', marginBottom: '15px', textAlign: 'center' }}
+              >
+                {error}
+              </motion.div>
+            )}
             <div className="input-group">
               <label>Email address</label>
               <div className="input-wrapper">
@@ -201,7 +210,10 @@ const Login = () => {
                   type="email"
                   placeholder="name@company.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (error) clearError();
+                  }}
                   required
                 />
               </div>
@@ -214,7 +226,10 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (error) clearError();
+                  }}
                   required
                 />
                 <button

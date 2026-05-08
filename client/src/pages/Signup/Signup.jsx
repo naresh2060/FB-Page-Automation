@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import useAuthStore from '../../store/useAuthStore.js';
 import { 
   Eye, 
   EyeOff, 
@@ -19,50 +20,45 @@ const Signup = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+    const [formError, setFormError] = useState(''); // ← local form error
+
+  const { register , isLoading , error , clearError } = useAuthStore();
   const navigate = useNavigate();
 
+ 
+  
   const handleSubmit = async  (e) => {
     e.preventDefault();
-    setError('')
-    setLoading(true);
+
+    setFormError('');  // clear local validation error
+    clearError();
 
     // Validation
     if(!fullName || !email || !password){
-      setError('All fields are required');
-      setLoading(false);
+      setFormError('All fields are required');
       return;
     } 
 
     //  Need to add a Confirm Password Validation Here after adding the confirm password field in frontend
 
     if(password.length < 6){
-       setError('Password must be at least 6 characters');
-      setLoading(false);
+       setFormError('Password must be at least 6 characters');
       return;
     }
 
 
-    try{
-      const response = await axios.post('http://localhost:5000/api/auth/register',{
+  
+     const success =  await register({
         name : fullName,
         email : email,
-        password : password,
+        password : password
       });
-          // ✅ axios puts response data directly in response.data
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('user', JSON.stringify(response.data.user));
 
-    navigate('/dashboard');
+      if(success){
+        navigate('/dashboard');
+      }
 
-    } catch(error){
-      // ✅ axios puts server error message in error.response.data
-    setError(error.response?.data?.error || 'Registration failed');
-    } finally {
-          setLoading(false);
-
-    }
+    
     
 
 

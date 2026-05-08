@@ -1,11 +1,11 @@
 import React from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
+import useAuthStore from '../../store/useAuthStore';
 
 const AuthLayout = () => {
-  // Mock authentication state
-  const isAuthenticated = false; // Usually we check if user is already logged in
+  const { isLoggedIn } = useAuthStore();
 
-  if (isAuthenticated) {
+  if (isLoggedIn) {
     return <Navigate to="/dashboard" replace />;
   }
 

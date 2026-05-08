@@ -20,7 +20,7 @@ const retryRequest = async (fn, retries = 3, delayMs = 2000) => {
 };
 
 // ✅ SINGLE FUNCTION (content + image prompt)
-export const generatePostAndPrompt = async (topic) => {
+export const generatePostAndPrompt = async (topic, theme = null) => {
   try {
     const response = await retryRequest(() =>
       ai.models.generateContent({
@@ -28,7 +28,7 @@ export const generatePostAndPrompt = async (topic) => {
        contents: `
 You are an elite Facebook growth strategist and viral content architect with deep expertise in Meta's algorithm, social SEO, and mass engagement psychology.
 
-Create a VIRAL, SEO-optimized Facebook post AND a detailed AI image generation prompt for the topic: "${topic}"
+Create a VIRAL, SEO-optimized Facebook post AND a detailed AI image generation prompt for the topic: "${topic}" ${theme ? `following the theme: "${theme}"` : ''}
 
 STRICT FORMAT (very important):
 Return ONLY valid JSON — no markdown, no backticks, no preamble:

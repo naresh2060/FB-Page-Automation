@@ -9,7 +9,9 @@ import {
   Plus, 
   Settings, 
   HelpCircle,
-  Sparkles
+  Sparkles,
+  FileText,
+  FolderOpen
 } from 'lucide-react';
 
 const FacebookIcon = ({ size = 18 }) => (
@@ -31,10 +33,9 @@ import './Sidebar.css';
 const Sidebar = ({ onCreatePost }) => {
   const menuItems = [
     { icon: <LayoutDashboard size={18} />, label: 'Dashboard', path: '/dashboard' },
-    { icon: <CalendarIcon size={18} />, label: 'Calendar', path: '/calendar' },
-    { icon: <Beaker size={18} />, label: 'AI Labs', path: '/ai-labs' },
+    { icon: <FileText size={18} />, label: 'Content', path: '/content' },
     { icon: <BarChart3 size={18} />, label: 'Analytics', path: '/analytics' },
-    { icon: <Zap size={18} />, label: 'Automation', path: '/automation' },
+    { icon: <FolderOpen size={18} />, label: 'Media Library', path: '/media' },
   ];
 
   const platforms = [

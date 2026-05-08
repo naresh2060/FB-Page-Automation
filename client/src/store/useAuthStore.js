@@ -54,7 +54,7 @@ const useAuthStore = create((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const data = await api.post("/auth/register", userData);
+      const data = await api.post("/api/auth/register", userData);
       // data = { user: { id, name, email }, token: "eyJhb..." }
 
       localStorage.setItem("token", data.token);
@@ -79,7 +79,7 @@ const useAuthStore = create((set, get) => ({
   logout: async () => {
     // tell backend to invalidate the token
     try {
-      await api.post("/auth/logout");
+      await api.post("/api/auth/logout");
     } catch {
       // even if API call fails — still log out on frontend
       // user should never get stuck logged in
@@ -114,7 +114,7 @@ const useAuthStore = create((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const user = await api.get("/auth/me");
+      const { user } = await api.get("/api/auth/me");
       // backend reads token from header → returns user data
       // data = { id, name, email, plan, avatar }
 
@@ -189,7 +189,7 @@ const useAuthStore = create((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      await api.post("/auth/forgot-password", { email });
+      await api.post("/api/auth/forgot-password", { email });
       // backend sends reset email
       // we don't store anything — just let the component know it worked
 
@@ -209,7 +209,7 @@ const useAuthStore = create((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      await api.post("/auth/reset-password", data);
+      await api.post("/api/auth/reset-password", data);
       // password updated on backend
       // redirect to login handled by the component
 
@@ -221,6 +221,9 @@ const useAuthStore = create((set, get) => ({
     }
   },
 
+
+  // ── Set Error ──────────────────────────────────────────────────
+  setError: (msg) => set({ error: msg }),
 
   // ── Clear Error ──────────────────────────────────────────────────
   // call this when user starts typing to clear old errors

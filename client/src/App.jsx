@@ -8,9 +8,17 @@ import ProtectedLayout from './layout/ProtectedLayout';
 import AuthLayout from './layout/AuthLayout/AuthLayout';
 import FacebookDashboard from './pages/FacebookDashboard/FacebookDashboard';
 import MainLayout from './layout/MainLayout/MainLayout';
+import ContentManager from './pages/Content/ContentManager';
+import useAuthStore from './store/useAuthStore';
 import './App.css';
 
 function App() {
+  const { checkAuth } = useAuthStore();
+
+  React.useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
   return (
     <Router>
       <Routes>
@@ -22,9 +30,10 @@ function App() {
 
         {/* Protected Routes */}
         <Route element={<ProtectedLayout />}>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/calendar" element={<Calendar />} />
+          <Route path="/content" element={<ContentManager />} />
           <Route path="/channels/facebook" element={<FacebookDashboard />} />
         </Route>
 

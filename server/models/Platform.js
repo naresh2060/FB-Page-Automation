@@ -33,16 +33,24 @@ const platformSchema = new mongoose.Schema(
 
     tokenExpiresAt: {
       type: Date,
-      required: true,
+      required: false,
     },
 
     profile: {
       platformUserId: { type: String },
-      username: { type: String },
-      displayName: { type: String },
-      profileImage: { type: String },
+      username:       { type: String },
+      displayName:    { type: String },
+      profileImage:   { type: String },
+      picture:        { type: String }, // support both
+      category:       { type: String },
+      fanCount:       { type: Number, default: 0 },
       followersCount: { type: Number, default: 0 },
-      followingCount: { type: Number, default: 0 },
+      verified:       { type: Boolean, default: false },
+      link:           { type: String },
+    },
+
+    lastSyncedAt: {
+      type: Date,
     },
 
     connectedAt: {

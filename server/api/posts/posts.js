@@ -1,62 +1,23 @@
 import express from 'express';
-import Post from '../../models/Post.js'
-
-import { generatePostAndPrompt } from '../../services/geminiService.js'
-import { postToPage, uploadPhoto } from '../../services/facebookServices.js';
-import { generateImage } from '../../services/huggingfaceService.js';
-import { uploadToCloudinary } from '../../services/cloudinaryService.js';
+import Post from '../../models/Post.js';
+import * as postServices from '../../services/postServices.js';
 
 const router = express.Router();
 
+// @route   POST /api/posts/generate
+// @desc    Generate AI content and publish to Facebook
+// @access  Protected (handled by middleware in server.js)
 router.post('/generate', async (req, res) => {
-  let post;
   try {
     const { topic } = req.body;
+    const userId = req.user._id;
 
     if (!topic) {
-      return res.status(400).json({ error: 'Topic is required' });
-    }
-    //Create inital post record
-    post = new Post({ topic, content: '', imageUrl: '' })
-
-    //step 1: Generate Post content and Image Generation Prompt
-    console.log("Generating post content...");
-    const {content, imagePrompt} = await generatePostAndPrompt(topic);
-
-    if (!content || !imagePrompt) {
-      throw new Error("Failed to generate content");
+      return res.status(400).json({ success: false, error: 'Topic is required' });
     }
 
-    post.content = content;
-    post.imagePrompt = imagePrompt;
-
-  
-
-    //step 2: Generate Image
-    console.log("Generating Image...");
-    const image = await generateImage(imagePrompt);
-
-    // step 3: Upload to cloudianary
-    console.log("Uploading image to Cloudinary...");
-    const cloudinaryResult = await uploadToCloudinary(image.buffer);
-    post.imageUrl = cloudinaryResult.secure_url; 
-
-    //step 4:  Upload image buffer to Facebook
-    console.log("Uploading to Facebook...");
-    const photoId = await uploadPhoto(image.buffer);
-
-    //step 5: Post to facebook
-    console.log("Posting to Facebook Page...");
-    const facebookPostId = await postToPage(content, photoId);
-
-    //Update post record
-    post.facebookPostId = facebookPostId;
-    // post.imageUrl = `data:image/png;base64,${image.base64}`;
-    post.status = 'posted';
-    post.postedAt = new Date();
-
-    await post.save();
-
+    console.log(`[posts api] Request to generate post for topic: ${topic}`);
+    const post = await postServices.generateAndPublishPost(userId, topic);
 
     res.json({
       success: true,
@@ -71,25 +32,34 @@ router.post('/generate', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error("Error in /generate:", error);
-
-    // Save failed post if we have a post object
-    if (post) {
-      post.status = 'failed';
-      post.error = error.message;
-      await post.save();
-    }
-
+    console.error("[posts api] Error in /generate:", error);
     return res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message || 'An error occurred during post generation'
     });
   }
 });
 
-router.get('/', (req, res) => {
-  return res.json({ "topic": "All Posts here" })
-})
+// @route   GET /api/posts
+// @desc    Get all posts
+router.get('/', async (req, res) => {
+  try {
+    const posts = await postServices.getAllPosts();
+    res.json({ success: true, posts });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// @route   DELETE /api/posts/:id
+router.delete('/:id', async (req, res) => {
+  try {
+    await postServices.deletePost(req.params.id);
+    res.json({ success: true, message: 'Post deleted' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 
 export default router;

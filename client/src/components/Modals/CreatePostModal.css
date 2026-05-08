@@ -246,3 +246,37 @@
     width: 100%;
   }
 }
+/* error message inside modal */
+.modal-error {
+  background: #fef2f2;
+  border: 0.5px solid #fca5a5;
+  color: #dc2626;
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+/* selected theme chip */
+.theme-chip.active {
+  background: #6366f1;
+  color: white;
+  border-color: #6366f1;
+}
+
+/* disabled states */
+.generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f9fafb;
+}
