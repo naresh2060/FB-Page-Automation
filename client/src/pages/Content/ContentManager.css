@@ -279,6 +279,22 @@
 .status-scheduled { background-color: #e0e7ff; color: #3730a3; }
 .status-draft     { background-color: #f1f5f9; color: #475569; }
 
+.theme-pill {
+  display: inline-flex;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: #f5f3ff;
+  color: #6366f1;
+  border: 0.5px solid #e0e7ff;
+}
+
+.no-theme-text {
+  color: #cbd5e1;
+  font-size: 0.8rem;
+}
+
 .schedule-cell {
   display: flex;
   flex-direction: column;

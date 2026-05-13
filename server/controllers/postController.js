@@ -10,23 +10,23 @@ export const getUserPosts = async (req, res) => {
   const {
     status,
     platform,
-    page  = 1,
+    page = 1,
     limit = 10,
   } = req.query;
 
   try {
     const result = await getAllPosts({
-    //             ↑ now calls the service, no conflict
+      //             ↑ now calls the service, no conflict
       userId,
       status,
       platform,
-      page:  Number(page),
+      page: Number(page),
       limit: Number(limit),
     });
 
     return res.status(200).json({
-      success:    true,
-      posts:      result.posts,
+      success: true,
+      posts: result.posts,
       pagination: result.pagination,
     });
 
@@ -85,7 +85,7 @@ export const generateImageForPost = async (req, res) => {
 
     // 4. return URL to frontend
     return res.status(200).json({
-      success:  true,
+      success: true,
       imageUrl: cloudinaryResult.secure_url,
     });
 
@@ -109,5 +109,41 @@ export const deleteUserPost = async (req, res) => {
     return res.status(200).json({ success: true, message: "Post deleted successfully" });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message || "Failed to delete post" });
+  }
+};
+
+export const updateUserPost = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user._id;
+  const updateData = req.body;
+
+  try {
+    const post = await Post.findOneAndUpdate(
+      { _id: id, userId },
+      { $set: updateData },
+      { new: true }
+    );
+    if (!post) {
+      return res.status(404).json({ success: false, message: "Post not found" });
+    }
+    return res.status(200).json({ success: true, post });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message || "Failed to update post" });
+  }
+};
+
+export const createUserPost = async (req, res) => {
+  const userId = req.user._id;
+  const postData = req.body;
+
+  try {
+    const post = new Post({
+      ...postData,
+      userId,
+    });
+    await post.save();
+    return res.status(201).json({ success: true, post });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message || "Failed to create post" });
   }
 };

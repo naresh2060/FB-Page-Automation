@@ -8,6 +8,7 @@ import {
   getPageInsights,
   getPostInsights,
   getAudienceInsights,
+  getUserPages,
   getPagePosts,
   getPostComments,
   replyToComment,
@@ -123,7 +124,7 @@ export const addFacebook = async (req, res) => {
 
     // If it's a parsed FB error from parseFbError
     const statusCode = err.code ? 400 : (err.statusCode || 500);
-    
+
     return res.status(statusCode).json({
       success: false,
       message: err.message || "Failed to connect Facebook",
@@ -231,7 +232,7 @@ export const publishFacebookPost = async (req, res) => {
   if (!postId) {
     return res.status(400).json({
       success: false,
-      error:   "postId is required",
+      error: "postId is required",
     });
   }
 
@@ -244,7 +245,7 @@ export const publishFacebookPost = async (req, res) => {
     if (!post) {
       return res.status(404).json({
         success: false,
-        error:   "Post not found or you do not have permission",
+        error: "Post not found or you do not have permission",
       });
     }
 
@@ -252,7 +253,7 @@ export const publishFacebookPost = async (req, res) => {
     if (!post.content) {
       return res.status(400).json({
         success: false,
-        error:   "Post has no content. Generate content first.",
+        error: "Post has no content. Generate content first.",
       });
     }
 
@@ -260,7 +261,7 @@ export const publishFacebookPost = async (req, res) => {
     if (post.status === "posted" && !isRepost) {
       return res.status(400).json({
         success: false,
-        error:   "This post has already been published",
+        error: "This post has already been published",
         facebookPostId: post.facebookPostId,
       });
     }
@@ -284,13 +285,13 @@ export const publishFacebookPost = async (req, res) => {
     // ── Step 3: Get Facebook platform connection ─────────────
     const platform = await getFbPlatform(userId);
 
-    const pageId      = platform.profile?.platformUserId;
+    const pageId = platform.profile?.platformUserId;
     const accessToken = platform.accessToken;
 
     if (!pageId) {
       return res.status(400).json({
         success: false,
-        error:   "Facebook page ID not found — please reconnect",
+        error: "Facebook page ID not found — please reconnect",
       });
     }
 
@@ -320,9 +321,9 @@ export const publishFacebookPost = async (req, res) => {
 
     // ── Step 6: Update existing post — don't create new one ──
     targetPost.facebookPostId = fbPostId;
-    targetPost.status         = "posted";
-    targetPost.postedAt       = new Date();
-    targetPost.platform       = "facebook";
+    targetPost.status = "posted";
+    targetPost.postedAt = new Date();
+    targetPost.platform = "facebook";
     await targetPost.save();
 
 
@@ -331,12 +332,12 @@ export const publishFacebookPost = async (req, res) => {
       success: true,
       message: isRepost ? "Post reposted to Facebook successfully" : "Post published to Facebook successfully",
       post: {
-        id:             targetPost._id,
+        id: targetPost._id,
         facebookPostId: fbPostId,
-        content:        targetPost.content,
-        imageUrl:       targetPost.imageUrl,
-        status:         targetPost.status,
-        postedAt:       targetPost.postedAt,
+        content: targetPost.content,
+        imageUrl: targetPost.imageUrl,
+        status: targetPost.status,
+        postedAt: targetPost.postedAt,
       },
       isNewPost: isRepost,
       originalPostId: post._id
@@ -346,14 +347,14 @@ export const publishFacebookPost = async (req, res) => {
     if (err.message?.includes("not connected")) {
       return res.status(403).json({
         success: false,
-        error:   "Facebook not connected. Please connect your page first.",
+        error: "Facebook not connected. Please connect your page first.",
       });
     }
 
     if (err.message?.includes("OAuthException")) {
       return res.status(401).json({
         success: false,
-        error:   "Facebook token expired. Please reconnect your page.",
+        error: "Facebook token expired. Please reconnect your page.",
       });
     }
 
@@ -361,6 +362,35 @@ export const publishFacebookPost = async (req, res) => {
   }
 };
 
+export const getPageList = async (req, res) => {
+  try {
+    // Get access token from request (body, query, or headers)
+    const accessToken = req.body.accessToken || req.query.accessToken;
+
+    if (!accessToken) {
+      return res.status(400).json({
+        success: false,
+        message: "Access token is required",
+      });
+    }
+
+    // Call controller function
+    const pages = await getUserPages(accessToken);
+
+    // Send response
+    return res.status(200).json({
+      success: true,
+      count: pages.length,
+      pages,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch pages",
+    });
+  }
+};
 
 
 
@@ -688,7 +718,7 @@ export const replyToMessage = async (req, res) => {
 };
 
 // POST /api/facebook/connect
-export const  connectFacebookPage = async (req, res) => {
+export const connectFacebookPage = async (req, res) => {
   try {
     const { pageId, accessToken } = req.body;
 

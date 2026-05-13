@@ -18,6 +18,7 @@ import {
   connectFacebookPage,
   addFacebook,
   getFacebookPage,
+  getPageList,
 } from "../controllers/facebookController.js";
 
 const router = express.Router();
@@ -37,7 +38,12 @@ router.use(authenticate);
 
 // router.post("/connect", connectFacebookPage);   // ← add
 router.post("/add", addFacebook)
-router.post("/getPage", getFacebookPage);
+router.get("/getPage", getFacebookPage);
+
+
+router.get("/pages", getPageList);
+
+
 
 
 // ── Posts ─────────────────────────────────────────────────────

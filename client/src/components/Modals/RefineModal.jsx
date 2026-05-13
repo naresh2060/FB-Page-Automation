@@ -4,6 +4,7 @@ import {
   Image as ImageIcon, RotateCcw, Calendar, Loader
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { THEMES } from '../../constants/themes';
 import usePostStore from '../../store/usePostStore.js';
 import './RefineModal.css';
 
@@ -13,14 +14,21 @@ const RefineModal = () => {
     isPreviewOpen,
     previewData,
     closePreview,
-    isLoading,
-    isImageLoading,   // ← image specific loading
-    imageError,       // ← image specific error
+    isEditMode,
+    handleSaveEditedPost,
+    isSaving,
+    isImageLoading,
+    imageError,
     handleGenerateImage,
+    handleRegenerate,
+    isLoading,
   } = usePostStore();
 
   const [copied, setCopied]                   = useState(false);
   const [editableContent, setEditableContent] = useState('');
+  const [editableTopic, setEditableTopic]     = useState('');
+  const [selectedTheme, setSelectedTheme]     = useState(null);
+  const [showSaveOptions, setShowSaveOptions] = useState(false);
 
   // ── editable image prompt state ───────────────────────────────
   const [editableImagePrompt, setEditableImagePrompt] = useState('');
@@ -31,9 +39,17 @@ const RefineModal = () => {
     if (previewData?.content) {
       setEditableContent(previewData.content);
     }
+    if (previewData?.topic) {
+      setEditableTopic(previewData.topic);
+    }
+    if (previewData?.theme) {
+      setSelectedTheme(previewData.theme);
+    }
     if (previewData?.imagePrompt) {
       setEditableImagePrompt(previewData.imagePrompt);
     }
+    // reset options when modal opens/changes
+    setShowSaveOptions(false);
   }, [previewData]);
 
   if (!isPreviewOpen) return null;
@@ -49,6 +65,20 @@ const RefineModal = () => {
     if (!editableImagePrompt.trim()) return;
     // pass the current (possibly edited) prompt to store
     handleGenerateImage(editableImagePrompt.trim());
+  };
+
+  const handleRegenerateClick = async () => {
+    await handleRegenerate(editableTopic, selectedTheme);
+  };
+
+  const onSave = async (asNew) => {
+    const editedData = {
+        ...previewData,
+        topic: editableTopic,
+        content: editableContent,
+        imagePrompt: editableImagePrompt
+    };
+    await handleSaveEditedPost(editedData, asNew);
   };
 
   return (
@@ -72,8 +102,8 @@ const RefineModal = () => {
               <Sparkles color="white" size={20} />
             </div>
             <div className="modal-title-group">
-              <h2>Step 2: Refine & Generate</h2>
-              <p>Review AI output and generate visuals</p>
+              <h2>{isEditMode ? "Edit Post Content" : "Step 2: Refine & Generate"}</h2>
+              <p>{isEditMode ? "Modify your post and save changes" : "Review AI output and generate visuals"}</p>
             </div>
           </div>
 
@@ -84,10 +114,44 @@ const RefineModal = () => {
 
                 {/* ── Left: Generated Text ── */}
                 <div className="generated-text-section">
+                  
+                  {/* Title Field */}
+                  <div className="title-edit-section">
+                    <label className="label-with-icon">
+                      <Edit3 size={14} />
+                      <span>Post Title / Topic</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      className="topic-input"
+                      value={editableTopic}
+                      onChange={(e) => setEditableTopic(e.target.value)}
+                      placeholder="Enter post title..."
+                    />
+                  </div>
+
+                  {/* Theme Selection */}
+                  {!isEditMode && (
+                    <div className="theme-selection-section">
+                      <p className="small-label">Refine Theme</p>
+                      <div className="theme-chips-mini">
+                        {THEMES.map((theme, idx) => (
+                          <button
+                            key={idx}
+                            className={`theme-chip-mini ${selectedTheme === theme.label ? 'active' : ''}`}
+                            onClick={() => setSelectedTheme(theme.label)}
+                          >
+                            {theme.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="section-header-inline">
                     <div className="label-with-icon">
                       <FileText size={16} />
-                      <span>Generated Content</span>
+                      <span>{isEditMode ? "Edit Content" : "Generated Content"}</span>
                     </div>
                     <div className="action-icons">
                       <button onClick={handleCopy} title="Copy">
@@ -95,9 +159,6 @@ const RefineModal = () => {
                           ? <Check size={16} />
                           : <Copy size={16} />
                         }
-                      </button>
-                      <button title="Edit content">
-                        <Edit3 size={16} />
                       </button>
                     </div>
                   </div>
@@ -237,20 +298,58 @@ const RefineModal = () => {
           {/* ── Footer ── */}
           <div className="modal-footer refine-footer">
             <div className="footer-left">
-              <button className="regenerate-link">
-                <RotateCcw size={18} />
-                <span>Regenerate</span>
-              </button>
+              {!isEditMode && (
+                <button 
+                  className="regenerate-link" 
+                  onClick={handleRegenerateClick}
+                  disabled={isLoading}
+                >
+                  <RotateCcw size={18} className={isLoading ? "spin-icon" : ""} />
+                  <span>{isLoading ? "Regenerating..." : "Regenerate"}</span>
+                </button>
+              )}
             </div>
 
             <div className="footer-actions">
-              <button className="save-draft-btn" onClick={closePreview}>
-                Save Draft
-              </button>
-              <button className="schedule-post-btn gradient-bg">
-                <Calendar size={18} />
-                <span>Schedule Post</span>
-              </button>
+              {isEditMode ? (
+                <>
+                  {showSaveOptions ? (
+                    <div className="save-options-group">
+                       <button 
+                        className="save-as-new-btn" 
+                        onClick={() => onSave(true)}
+                        disabled={isSaving}
+                      >
+                        {isSaving ? "Saving..." : "Save as New"}
+                      </button>
+                      <button 
+                        className="update-existing-btn gradient-bg" 
+                        onClick={() => onSave(false)}
+                        disabled={isSaving}
+                      >
+                        {isSaving ? "Updating..." : "Update Existing"}
+                      </button>
+                      <button className="btn-cancel-mini" onClick={() => setShowSaveOptions(false)}>
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <button className="save-draft-btn gradient-bg" onClick={() => setShowSaveOptions(true)}>
+                      Save Changes
+                    </button>
+                  )}
+                </>
+              ) : (
+                <>
+                  <button className="save-draft-btn" onClick={closePreview}>
+                    Save Draft
+                  </button>
+                  <button className="schedule-post-btn gradient-bg">
+                    <Calendar size={18} />
+                    <span>Schedule Post</span>
+                  </button>
+                </>
+              )}
             </div>
           </div>
 

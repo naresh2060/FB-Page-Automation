@@ -1,5 +1,14 @@
 import { create } from 'zustand';
-import { generatePost, generateImage, getPosts, publishToFacebook, deletePost as deletePostApi, getPostInsightsApi } from '../api/postApi.js';
+import { 
+    generatePost, 
+    generateImage, 
+    getPosts, 
+    publishToFacebook, 
+    deletePost as deletePostApi, 
+    getPostInsightsApi,
+    updatePost,
+    createPost
+} from '../api/postApi.js';
 
 const usePostStore = create((set, get) => ({
 
@@ -9,16 +18,27 @@ const usePostStore = create((set, get) => ({
 
     // ── Data State ────────────────────────────────────────────────
     previewData: null,   // what backend returns — shown in RefineModal
+    isEditMode: false,
     isLoading: false,
     error: null,
     isImageLoading: false,
     imageError: null,
+    isSaving: false,
 
     // ── Modal Actions ─────────────────────────────────────────────
     openCreate: () => set({ isCreateOpen: true, error: null }),
     closeCreate: () => set({ isCreateOpen: false, error: null }),
+    openEdit: (post) => set({ 
+        isPreviewOpen: true, 
+        previewData: post, 
+        isEditMode: true, 
+        error: null 
+    }),
     closePreview: () => set({
-        isPreviewOpen: false, previewData: null, isImageLoading: false,
+        isPreviewOpen: false, 
+        previewData: null, 
+        isEditMode: false,
+        isImageLoading: false,
         imageError: null,
     }),
 
@@ -46,6 +66,25 @@ const usePostStore = create((set, get) => ({
                 isLoading: false,
                 // isCreateOpen stays true — user can retry
             });
+        }
+    },
+
+    // ── Regenerate Post ───────────────────────────────────────────
+    handleRegenerate: async (topic, theme) => {
+        set({ isLoading: true, error: null });
+        try {
+            const data = await generatePost({ topic, theme });
+            set({
+                previewData: data.post,
+                isLoading: false,
+            });
+            return { success: true };
+        } catch (err) {
+            set({
+                error: err.message || "Failed to regenerate post",
+                isLoading: false,
+            });
+            return { success: false, message: err.message };
         }
     },
 
@@ -172,6 +211,52 @@ const usePostStore = create((set, get) => ({
             return { success: false, message: err.message };
         }
     },
+    // ── Save Edited Post ──────────────────────────────────────────
+    handleSaveEditedPost: async (editedData, asNew = false) => {
+        const { previewData } = get();
+        set({ isSaving: true, error: null });
+
+        try {
+            let result;
+            if (asNew) {
+                // Create new record
+                const { _id, ...postDataWithoutId } = editedData;
+                result = await createPost({
+                    ...postDataWithoutId,
+                    status: 'draft', // New posts should probably start as draft
+                    createdAt: new Date().toISOString()
+                });
+            } else {
+                // Update existing record
+                result = await updatePost(previewData._id, editedData);
+            }
+
+            if (result.success) {
+                const savedPost = result.post;
+                set((state) => {
+                    let newPosts;
+                    if (asNew) {
+                        newPosts = [savedPost, ...state.posts];
+                    } else {
+                        newPosts = state.posts.map(p => 
+                            p._id === previewData._id ? savedPost : p
+                        );
+                    }
+                    return {
+                        posts: newPosts,
+                        isSaving: false,
+                        isPreviewOpen: false,
+                        previewData: null,
+                        isEditMode: false
+                    };
+                });
+                return { success: true, message: asNew ? "Created new post" : "Updated post successfully" };
+            }
+        } catch (err) {
+            set({ isSaving: false, error: err.message || "Failed to save post" });
+            return { success: false, message: err.message || "Failed to save post" };
+        }
+    }
 }));
 
 export default usePostStore;

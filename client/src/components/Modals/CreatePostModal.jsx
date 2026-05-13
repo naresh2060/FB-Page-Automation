@@ -1,22 +1,12 @@
 // client/src/components/Modals/CreatePostModal.jsx
 import React, { useState } from 'react';
-import {
-  X, Sparkles, HelpCircle,
-  LineChart, Megaphone, Code, FileText, Lightbulb
-} from 'lucide-react';
+import { X, Sparkles, HelpCircle, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { THEMES } from '../../constants/themes';
 import usePostStore from '../../store/usePostStore';
 import './CreatePostModal.css';
 
-// ── moved outside component — no need to recreate on every render
 const MAX_CHARS = 500;
-
-const THEMES = [
-  { icon: <LineChart size={14} />, label: 'Market Analysis' },
-  { icon: <Megaphone size={14} />, label: 'Brand Story' },
-  { icon: <Code size={14} />,      label: 'Technical Guide' },
-  { icon: <FileText size={14} />,  label: 'Opinion Piece' },
-];
 
 const CreatePostModal = () => {
 

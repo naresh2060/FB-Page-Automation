@@ -1,4 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
+import { THEME_PROMPTS, DEFAULT_THEME_INSTRUCTION } from "../constants/themePrompts.js";
+
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -21,14 +23,20 @@ const retryRequest = async (fn, retries = 3, delayMs = 2000) => {
 
 // ✅ SINGLE FUNCTION (content + image prompt)
 export const generatePostAndPrompt = async (topic, theme = null) => {
+
+  // Pick theme instruction or fall back to default
+  const themeInstruction = theme
+    ? (THEME_PROMPTS[theme] ?? DEFAULT_THEME_INSTRUCTION)
+    : DEFAULT_THEME_INSTRUCTION;
+    
   try {
     const response = await retryRequest(() =>
       ai.models.generateContent({
         model: "models/gemini-2.5-flash",
-       contents: `
+        contents: `
 You are an elite Facebook growth strategist and viral content architect with deep expertise in Meta's algorithm, social SEO, and mass engagement psychology.
 
-Create a VIRAL, SEO-optimized Facebook post AND a detailed AI image generation prompt for the topic: "${topic}" ${theme ? `following the theme: "${theme}"` : ''}
+Create a VIRAL, SEO-optimized Facebook post AND a detailed AI image generation prompt for the topic: "${topic}" ${themeInstruction}
 
 STRICT FORMAT (very important):
 Return ONLY valid JSON — no markdown, no backticks, no preamble:
@@ -51,6 +59,7 @@ META ALGORITHM PRIORITIES (write with these in mind):
 STRUCTURE (follow this exact order):
 
 1. SEO HOOK — Line 1 (THE MOST IMPORTANT LINE):
+   - This will be used as the post title
    - Must contain the primary keyword naturally in the first 10 words
    - Use a pattern interrupt: shocking stat, bold claim, or polarizing question
    - 10–15 words max
@@ -161,7 +170,7 @@ highly detailed, sharp focus, photorealistic, professional grade"
       throw new Error("Invalid AI response format");
     }
 
-     // ✅ Extra safety (prevents mongoose error)
+    // ✅ Extra safety (prevents mongoose error)
     if (!data.content || !data.imagePrompt) {
       throw new Error("Incomplete AI response");
     }

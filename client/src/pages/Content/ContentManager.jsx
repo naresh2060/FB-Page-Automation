@@ -34,6 +34,9 @@ const ActionDropdown = ({ post, onClose, onPublish, onSchedule, onDelete, onEdit
 
       {isPosted && (
         <>
+          <button className="action-dd-item" onClick={() => { onEdit(post); onClose(); }}>
+            <Edit2 size={13} /> Edit post
+          </button>
           <button className="action-dd-item blue" onClick={() => { onInsights(post); onClose(); }}>
             <BarChart2 size={13} /> View insights
           </button>
@@ -141,7 +144,7 @@ const ContentManager = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
 
-  const { posts, isFetchingPosts, fetchPosts, pagination, publishToFacebook, isPublishing, deletePost } = usePostStore();
+  const { posts, isFetchingPosts, fetchPosts, pagination, publishToFacebook, isPublishing, deletePost, openEdit } = usePostStore();
 
   useEffect(() => { fetchPosts(); }, [fetchPosts]);
 
@@ -213,8 +216,7 @@ const ContentManager = () => {
   };
 
   const handleEdit = (post) => {
-    // navigate to editor or open edit modal
-    showToast(`Opening editor for "${post.topic}"`, "info");
+    openEdit(post);
   };
 
   const handleDelete = (post) => {
@@ -401,6 +403,7 @@ const ContentManager = () => {
               </th>
               <th>Content</th>
               <th>Platform</th>
+              <th>Theme</th>
               <th>Status</th>
               <th>Schedule</th>
               <th>Engagement</th>
@@ -447,6 +450,14 @@ const ContentManager = () => {
 
                   <td className="platform-cell" style={{ textTransform: "capitalize" }}>
                     {post.platform || "Facebook"}
+                  </td>
+
+                  <td>
+                    {post.theme ? (
+                      <span className="theme-pill">{post.theme}</span>
+                    ) : (
+                      <span className="no-theme-text">—</span>
+                    )}
                   </td>
 
                   <td>
@@ -508,6 +519,13 @@ const ContentManager = () => {
                       )}
                       {isPosted && (
                         <>
+                          <button
+                            className="row-action-btn blue"
+                            title="Edit"
+                            onClick={() => handleEdit(post)}
+                          >
+                            <Edit2 size={13} />
+                          </button>
                           <button
                             className="row-action-btn blue"
                             title="View insights"

@@ -47,13 +47,13 @@ const usePlatformStore = create(
         }
       },
 
-      
+
 
       fetchFacebookPage: async () => {
         set({ loading: true, error: null });
 
         try {
-          const res = await api.get("/api/facebook/getPage  ");
+          const res = await api.get("/api/facebook/getPage");
 
           const data = res.data;
 
