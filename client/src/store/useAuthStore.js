@@ -5,10 +5,10 @@ import api from "../api/axiosInstance.js";
 const useAuthStore = create((set, get) => ({
 
   // ── State ────────────────────────────────────────────────────────
-  user:      null,   // { id, name, email, plan, avatar, timezone }
+  user: null,   // { id, name, email, plan, avatar, timezone }
   isLoggedIn: false, // controls ProtectedLayout
-  isLoading:  false, // shows spinners on buttons
-  error:      null,  // shows error messages in forms
+  isLoading: false, // shows spinners on buttons
+  error: null,  // shows error messages in forms
 
 
   // ── Login ────────────────────────────────────────────────────────
@@ -20,16 +20,16 @@ const useAuthStore = create((set, get) => ({
     // error = null      → clears any previous error
 
     try {
-      const data = await api.post("/api/auth/login", credentials);
+      const data = await api.post("/auth/login", credentials);
       // data = { user: { id, name, email, plan }, token: "eyJhb..." }
 
       localStorage.setItem("token", data.token);
       // save token so user stays logged in after page refresh
 
       set({
-        user:      data.user,
+        user: data.user,
         isLoggedIn: true,
-        error:      null,
+        error: null,
       });
       // every component reading these values re-renders automatically
 
@@ -54,15 +54,15 @@ const useAuthStore = create((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const data = await api.post("/api/auth/register", userData);
+      const data = await api.post("/auth/register", userData);
       // data = { user: { id, name, email }, token: "eyJhb..." }
 
       localStorage.setItem("token", data.token);
 
       set({
-        user:      data.user,
+        user: data.user,
         isLoggedIn: true,
-        error:      null,
+        error: null,
       });
 
     } catch (err) {
@@ -79,7 +79,7 @@ const useAuthStore = create((set, get) => ({
   logout: async () => {
     // tell backend to invalidate the token
     try {
-      await api.post("/api/auth/logout");
+      await api.post("/auth/logout");
     } catch {
       // even if API call fails — still log out on frontend
       // user should never get stuck logged in
@@ -88,9 +88,9 @@ const useAuthStore = create((set, get) => ({
       // remove token so checkAuth won't restore the session
 
       set({
-        user:      null,
+        user: null,
         isLoggedIn: false,
-        error:      null,
+        error: null,
       });
       // every component re-renders
       // ProtectedLayout sees isLoggedIn = false → redirects to /login
@@ -114,7 +114,7 @@ const useAuthStore = create((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const { user } = await api.get("/api/auth/me");
+      const { user } = await api.get("/auth/me");
       // backend reads token from header → returns user data
       // data = { id, name, email, plan, avatar }
 
@@ -130,7 +130,7 @@ const useAuthStore = create((set, get) => ({
       // clean up bad token
 
       set({
-        user:      null,
+        user: null,
         isLoggedIn: false,
       });
       // ProtectedLayout will redirect to /login
@@ -189,7 +189,7 @@ const useAuthStore = create((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      await api.post("/api/auth/forgot-password", { email });
+      await api.post("/auth/forgot-password", { email });
       // backend sends reset email
       // we don't store anything — just let the component know it worked
 
@@ -209,7 +209,7 @@ const useAuthStore = create((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      await api.post("/api/auth/reset-password", data);
+      await api.post("/auth/reset-password", data);
       // password updated on backend
       // redirect to login handled by the component
 

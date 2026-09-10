@@ -39,7 +39,7 @@ const FacebookDashboard = () => {
   const isConnected = status === "connected" && pageInfo !== null;
 
   // ── Post store for Posts tab ─────────────────────────────────
-  const { posts, isFetchingPosts, fetchPosts, fetchPostInsights } = usePostStore();
+  const { posts, isFetchingPosts, fetchPosts, fetchPostInsights,  } = usePostStore();
   const publishedPosts = posts.filter(p => p.status === 'posted');
 
   useEffect(() => {

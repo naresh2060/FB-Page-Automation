@@ -7,7 +7,8 @@ import {
     deletePost as deletePostApi, 
     getPostInsightsApi,
     updatePost,
-    createPost
+    createPost,
+    getFacebookPostList
 } from '../api/postApi.js';
 
 const usePostStore = create((set, get) => ({
@@ -121,22 +122,60 @@ const usePostStore = create((set, get) => ({
     isFetchingPosts: false,
     fetchPostsError: null,
 
+    // fetchPosts: async (params = {}) => {
+    //     set({ isFetchingPosts: true, fetchPostsError: null });
+    //     try {
+    //         const data = await getPosts(params);
+    //         set({
+    //             posts: data.posts,
+    //             pagination: data.pagination,
+    //             isFetchingPosts: false
+    //         });
+    //     } catch (err) {
+    //         set({
+    //             fetchPostsError: err.message || "Failed to fetch posts",
+    //             isFetchingPosts: false
+    //         });
+    //     }
+    // },
+
+
     fetchPosts: async (params = {}) => {
         set({ isFetchingPosts: true, fetchPostsError: null });
         try {
-            const data = await getPosts(params);
+            const response = await getFacebookPostList(params);
+            const rawPosts = Array.isArray(response)
+                ? response
+                : response?.posts || response?.data || [];
+
+            // Map Facebook API format to local DB format so UI components (FacebookDashboard, ContentManager) don't break
+            const normalizedPosts = rawPosts.map(fbPost => ({
+                _id: fbPost.id,
+                facebookPostId: fbPost.id,
+                content: fbPost.message || fbPost.story || '',
+                topic: fbPost.message ? fbPost.message.substring(0, 30) + '...' : 'Facebook Post',
+                imageUrl: fbPost.full_picture || null,
+                status: 'posted', // FB posts are already published
+                postedAt: fbPost.created_time,
+                createdAt: fbPost.created_time,
+                views: fbPost.shares?.count || 0,
+                likes: fbPost.likes?.summary?.total_count || 0,
+                commentsCount: fbPost.comments?.summary?.total_count || 0,
+                permalink_url: fbPost.permalink_url,
+            }));
+
             set({
-                posts: data.posts,
-                pagination: data.pagination,
+                posts: normalizedPosts,
                 isFetchingPosts: false
             });
         } catch (err) {
             set({
-                fetchPostsError: err.message || "Failed to fetch posts",
+                fetchPostsError: err.message || 'Failed to fetch Facebook posts',
                 isFetchingPosts: false
             });
         }
     },
+
 
     // ── Publish to Facebook ────────────────────────────────────────
     isPublishing: false,

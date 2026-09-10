@@ -11,7 +11,7 @@ import usePostStore from "../../store/usePostStore";
 
 // ── Dropdown menu per row ────────────────────────────────────────
 const ActionDropdown = ({ post, onClose, onPublish, onSchedule, onDelete, onEdit, onInsights, onRepost }) => {
-  const isDraft  = post.status === "draft"   || post.status === "pending";
+  const isDraft = post.status === "draft" || post.status === "pending";
   const isPosted = post.status === "posted";
 
   return (
@@ -135,12 +135,12 @@ const ConfirmModal = ({ title, message, onConfirm, onClose, confirmText, confirm
 
 // ── Main component ────────────────────────────────────────────────
 const ContentManager = () => {
-  const [activeTab,      setActiveTab]      = useState("All Content");
-  const [selectedIds,    setSelectedIds]    = useState(new Set());
+  const [activeTab, setActiveTab] = useState("All Content");
+  const [selectedIds, setSelectedIds] = useState(new Set());
   const [openDropdownId, setOpenDropdownId] = useState(null);
-  const [schedulePost,   setSchedulePost]   = useState(null);
-  const [confirmModal,   setConfirmModal]   = useState(null);
-  const [toast,          setToast]          = useState(null);
+  const [schedulePost, setSchedulePost] = useState(null);
+  const [confirmModal, setConfirmModal] = useState(null);
+  const [toast, setToast] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
 
@@ -149,8 +149,8 @@ const ContentManager = () => {
   useEffect(() => { fetchPosts(); }, [fetchPosts]);
 
   useEffect(() => {
-  fetchPosts({ page: currentPage, limit: 10 });
-}, [fetchPosts, currentPage]);
+    fetchPosts({ page: currentPage, limit: 10 });
+  }, [fetchPosts, currentPage]);
 
   // close dropdown on outside click
   useEffect(() => {
@@ -169,7 +169,7 @@ const ContentManager = () => {
   const filtered = posts.filter(p => {
     if (activeTab === "Scheduled") return p.status === "scheduled";
     if (activeTab === "Published") return p.status === "posted";
-      if (activeTab === "Draft")    return p.status === "draft" || p.status === "pending";
+    if (activeTab === "Draft") return p.status === "draft" || p.status === "pending";
 
     return true;
   });
@@ -211,7 +211,7 @@ const ContentManager = () => {
   };
 
   const handleScheduleConfirm = (post, date, time) => {
-    // call your API: api.post(`/api/facebook/posts/schedule`, { postId: post._id, scheduledAt: ... })
+    // call your API: api.post('/facebook/posts/schedule', { postId: post._id, scheduledAt: ... })
     showToast(`"${post.topic}" scheduled for ${date} at ${time}`);
   };
 
@@ -300,8 +300,8 @@ const ContentManager = () => {
             exit={{ opacity: 0, y: -10 }}
           >
             {toast.type === "success" && <CheckCircle size={14} />}
-            {toast.type === "danger"  && <Trash2 size={14} />}
-            {toast.type === "info"    && <BarChart2 size={14} />}
+            {toast.type === "danger" && <Trash2 size={14} />}
+            {toast.type === "info" && <BarChart2 size={14} />}
             {toast.msg}
           </motion.div>
         )}
@@ -416,7 +416,7 @@ const ContentManager = () => {
             ) : filtered.length === 0 ? (
               <tr><td colSpan="7" className="table-empty">No posts found.</td></tr>
             ) : filtered.map(post => {
-              const isDraft  = post.status === "draft" || post.status === "pending";
+              const isDraft = post.status === "draft" || post.status === "pending";
               const isPosted = post.status === "posted";
               const postDate = new Date(post.createdAt);
 
@@ -576,39 +576,39 @@ const ContentManager = () => {
         </table>
 
         <div className="table-footer">
-  <span className="pagination-info">
-    Showing {posts.length} of {pagination?.total || 0} posts
-  </span>
+          <span className="pagination-info">
+            Showing {posts.length} of {pagination?.total || 0} posts
+          </span>
 
-  <div className="pagination-controls">
-    <button
-      className="page-btn"
-      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-      disabled={currentPage === 1}
-    >
-      <ChevronLeft size={16} />
-    </button>
+          <div className="pagination-controls">
+            <button
+              className="page-btn"
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft size={16} />
+            </button>
 
-    {/* Page number pills */}
-    {Array.from({ length: pagination?.totalPages || 1 }, (_, i) => i + 1).map(page => (
-      <button
-        key={page}
-        className={`page-num-btn ${currentPage === page ? "active" : ""}`}
-        onClick={() => setCurrentPage(page)}
-      >
-        {page}
-      </button>
-    ))}
+            {/* Page number pills */}
+            {Array.from({ length: pagination?.totalPages || 1 }, (_, i) => i + 1).map(page => (
+              <button
+                key={page}
+                className={`page-num-btn ${currentPage === page ? "active" : ""}`}
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </button>
+            ))}
 
-    <button
-      className="page-btn"
-      onClick={() => setCurrentPage(p => Math.min(pagination?.totalPages || 1, p + 1))}
-      disabled={currentPage === pagination?.totalPages || pagination?.totalPages === 0}
-    >
-      <ChevronRight size={16} />
-    </button>
-  </div>
-</div>  
+            <button
+              className="page-btn"
+              onClick={() => setCurrentPage(p => Math.min(pagination?.totalPages || 1, p + 1))}
+              disabled={currentPage === pagination?.totalPages || pagination?.totalPages === 0}
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* ── Bottom cards ── */}

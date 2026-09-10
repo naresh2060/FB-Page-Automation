@@ -1,3 +1,4 @@
+console.log("🔥 facebook.routes.js LOADED");
 import express from "express";
 import multer from "multer";
 import { authenticate } from "../middlewares/authenticate.js";
@@ -42,6 +43,8 @@ router.get("/getPage", getFacebookPage);
 
 
 router.get("/pages", getPageList);
+
+router.get("/postlist", getPagePostsList);  //working
 
 
 
