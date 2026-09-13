@@ -27,4 +27,4 @@ export const createPost = (data) => api.post('/posts', data);
 export const getPostInsightsApi = (fbPostId) => api.get(`/facebook/analytics/post/${fbPostId}`);
 
 export const getFacebookPostList = (params = {}) =>
-  api.get('/api/v1/facebook/postlist', { params });
+  api.get('/facebook/postlist', { params });

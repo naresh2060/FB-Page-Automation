@@ -7,6 +7,7 @@ import Signup from './pages/Signup/Signup';
 import ProtectedLayout from './layout/ProtectedLayout';
 import AuthLayout from './layout/AuthLayout/AuthLayout';
 import FacebookDashboard from './pages/FacebookDashboard/FacebookDashboard';
+import InstagramDashboard from './pages/InstagramDashboard/InstagramDashboard';
 import MainLayout from './layout/MainLayout/MainLayout';
 import ContentManager from './pages/Content/ContentManager';
 import useAuthStore from './store/useAuthStore';
@@ -35,6 +36,7 @@ function App() {
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/content" element={<ContentManager />} />
           <Route path="/channels/facebook" element={<FacebookDashboard />} />
+          <Route path="/channels/instagram" element={<InstagramDashboard />} />
         </Route>
 
         {/* Public / Main Routes */}

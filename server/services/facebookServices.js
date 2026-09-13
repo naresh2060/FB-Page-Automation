@@ -104,6 +104,8 @@ export const getPageDetails = async (pageId, accessToken) => {
         fields: "id,name,category,fan_count,picture,verification_status,link",
       },
     });
+
+    
     return data;
   } catch (err) {
     throw parseFbError(err);

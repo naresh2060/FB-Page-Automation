@@ -109,7 +109,7 @@ const FacebookDashboard = () => {
           <div className="fb-brand-avatar">
             {isConnected && pageInfo?.picture ? (
               <img
-                src={pageInfo.picture}
+                // src={pageInfo.picture}
                 alt={pageInfo.name}
                 style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
               />
@@ -355,7 +355,7 @@ const FacebookDashboard = () => {
               <div className="fb-connected-info">
                 {pageInfo.picture && (
                   <img
-                    src={pageInfo.picture}
+                    // src={pageInfo.picture}
                     alt={pageInfo.name}
                     className="fb-connected-avatar"
                   />

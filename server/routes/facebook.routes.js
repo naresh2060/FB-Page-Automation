@@ -1,4 +1,4 @@
-console.log("🔥 facebook.routes.js LOADED");
+// console.log("🔥 facebook.routes.js LOADED");
 import express from "express";
 import multer from "multer";
 import { authenticate } from "../middlewares/authenticate.js";

@@ -31,7 +31,7 @@ export const addFacebook = async (req, res) => {
   if (!pageId || !accessToken) {
     return res.status(400).json({
       success: false,
-      message: "pageId and accessToken are required",
+      message: "pageId and accessToken are required"
     });
   }
 
