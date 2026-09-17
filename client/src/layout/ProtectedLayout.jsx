@@ -22,7 +22,7 @@ const ProtectedLayout = () => {
     initAuth();
   }, [checkAuth]);
 
-  const isDashboard = ['/dashboard', '/', '/channels/facebook', '/content'].includes(location.pathname);
+  const isDashboard = ['/dashboard', '/', '/channels/facebook', '/content', '/channels/instagram'].includes(location.pathname);
 
   if (!authChecked || isLoading) {
     return <div>Loading...</div>; // Or a spinner

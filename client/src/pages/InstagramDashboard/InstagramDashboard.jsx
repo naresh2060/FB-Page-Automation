@@ -8,6 +8,8 @@ import {
   Zap,
 } from 'lucide-react';
 import './InstagramDashboard.css';
+import ConnectInstagramModal from '../../components/Modals/ConnectInstagramModal';
+import useInstagramStore from '../../store/useInstagramStore';
 
 const InstagramIcon = ({ size = 32 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -30,7 +32,13 @@ const StatCard = ({ label, value, trendValue, isPositive, trendText }) => (
 );
 
 const InstagramDashboard = () => {
+
   const [activeTab, setActiveTab] = useState('Overview');
+  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
+
+  const { status, pageData, disconnect } = useInstagramStore();
+  const isConnected = status === 'connected' && pageData !== null;
+  const connectedProfile = pageData?.savedPlatform?.profile || pageData?.profile;
 
   const stats = [
     { label: 'Page followers', value: '12.4K', trendValue: '+840', isPositive: true, trendText: 'this week' },
@@ -70,23 +78,39 @@ const InstagramDashboard = () => {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             {/* Avatar */}
-            <div className="ig-brand-avatar">SF</div>
+            <div className="ig-brand-avatar">
+              {isConnected && connectedProfile?.username
+                ? connectedProfile.username.slice(0, 2).toUpperCase()
+                : 'IG'}
+            </div>
 
             {/* Brand name + meta */}
             <div>
               <div className="ig-brand-name">
-                @socialflow.ai — Instagram
-                <span className="ig-connected-pill">Connected</span>
+                {isConnected && connectedProfile?.username
+                  ? `@${connectedProfile.username} — Instagram`
+                  : '@socialflow.ai — Instagram'}
+                <span className={`ig-connected-pill ${!isConnected ? 'disconnected' : ''}`}>
+                  {isConnected ? 'Connected' : 'Disconnected'}
+                </span>
               </div>
               <div className="ig-brand-stats">
-                12.4K followers · Creator account · Token active (Long-lived)
+                {isConnected
+                  ? `${connectedProfile?.mediaCount !== undefined ? `${connectedProfile.mediaCount} posts · ` : ''}Creator account · Connected`
+                  : '12.4K followers · Creator account · Connect to sync live data'}
               </div>
             </div>
           </div>
 
           <div className="ig-header-actions">
-            <button className="ig-btn-outline">Reconnect</button>
-            <button className="ig-btn-outline danger">Disconnect</button>
+            <button className="ig-btn-outline" onClick={() => setIsConnectModalOpen(true)}>
+              {isConnected ? 'Reconnect' : 'Connect'}
+            </button>
+            {isConnected && (
+              <button className="ig-btn-outline danger" onClick={disconnect}>
+                Disconnect
+              </button>
+            )}
             <button className="ig-btn-primary">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
               Create Reel / Post
@@ -283,7 +307,16 @@ const InstagramDashboard = () => {
           </div>
         </div>
       )}
-    </div>
+
+
+
+    {/* ── Connect Modal ── */}
+    <ConnectInstagramModal
+      isOpen={isConnectModalOpen}
+      onClose={() => setIsConnectModalOpen(false)}
+      onConnected={() => setIsConnectModalOpen(false)}
+    />
+  </div>
   );
 };
 

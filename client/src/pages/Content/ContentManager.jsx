@@ -144,13 +144,14 @@ const ContentManager = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
 
-  const { posts, isFetchingPosts, fetchPosts, pagination, publishToFacebook, isPublishing, deletePost, openEdit } = usePostStore();
+  // const { posts, isFetchingPosts, fetchPosts, pagination, publishToFacebook, isPublishing, deletePost, openEdit } = usePostStore();
+  const { userPosts, isFetchingUserPosts, fetchUserPosts, pagination, publishToFacebook, isPublishing, deletePost, openEdit } = usePostStore();
 
-  useEffect(() => { fetchPosts(); }, [fetchPosts]);
+  useEffect(() => { fetchUserPosts(); }, [fetchUserPosts]);
 
   useEffect(() => {
-    fetchPosts({ page: currentPage, limit: 10 });
-  }, [fetchPosts, currentPage]);
+    fetchUserPosts({ page: currentPage, limit: 10 });
+  }, [fetchUserPosts, currentPage]);
 
   // close dropdown on outside click
   useEffect(() => {
@@ -166,7 +167,7 @@ const ContentManager = () => {
   };
 
   // ── Filter tabs ──────────────────────────────────────────────
-  const filtered = posts.filter(p => {
+  const filtered = userPosts.filter(p => {
     if (activeTab === "Scheduled") return p.status === "scheduled";
     if (activeTab === "Published") return p.status === "posted";
     if (activeTab === "Draft") return p.status === "draft" || p.status === "pending";
@@ -411,7 +412,7 @@ const ContentManager = () => {
             </tr>
           </thead>
           <tbody>
-            {isFetchingPosts ? (
+            {isFetchingUserPosts ? (
               <tr><td colSpan="7" className="table-empty">Loading posts...</td></tr>
             ) : filtered.length === 0 ? (
               <tr><td colSpan="7" className="table-empty">No posts found.</td></tr>
@@ -577,7 +578,7 @@ const ContentManager = () => {
 
         <div className="table-footer">
           <span className="pagination-info">
-            Showing {posts.length} of {pagination?.total || 0} posts
+            Showing {userPosts.length} of {pagination?.total || 0} posts
           </span>
 
           <div className="pagination-controls">

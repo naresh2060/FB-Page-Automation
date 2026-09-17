@@ -140,6 +140,32 @@ const usePostStore = create((set, get) => ({
     // },
 
 
+    userPosts: [],
+    isFetchingUserPosts: false,
+    fetchUserPostsError : null,
+    fetchUserPosts: async (params = {}) => {
+        set({isFetchingUserPosts: true});
+
+        try {
+            const response = await getPosts(params);
+            const rawPosts = Array.isArray(response)
+                ? response
+                : response?.posts || response?.data || [];
+
+                set({
+                    userPosts : rawPosts,
+                    isFetchingUserPosts:false
+                })
+
+        } catch (err) {
+            set({
+                fetchUserPostsError: err.message || 'Failed to fetch User posts from Database',
+                isFetchingUserPosts: false
+            });
+        }
+    },
+
+
     fetchPosts: async (params = {}) => {
         set({ isFetchingPosts: true, fetchPostsError: null });
         try {

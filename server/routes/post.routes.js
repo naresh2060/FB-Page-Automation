@@ -17,4 +17,6 @@ router.post("/publish/facebook", publishFacebookPost)
 router.put("/:id", updateUserPost);
 router.delete("/:id", deleteUserPost);
 
+router.get("/user/post", getUserPosts)
+
 export default router;

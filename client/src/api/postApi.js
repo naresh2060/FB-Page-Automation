@@ -17,7 +17,7 @@ export const deletePost = (postId) => api.delete(`/posts/${postId}`);
 // export const getPosts = (params) => api.get('/posts', { params });
 export const getPosts = async (params = {}) => {
   const { page = 1, limit = 10 } = params;
-  const data = await api.get(`/post?page=${page}&limit=${limit}`);
+  const data = await api.get(`/posts/user/post?page=${page}&limit=${limit}`);
   return data;
 };
 

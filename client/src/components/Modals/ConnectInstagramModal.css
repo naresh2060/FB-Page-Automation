@@ -1,0 +1,423 @@
+/* ── Overlay ──────────────────────────────────────────────────── */
+.ig-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+/* ── Modal container ──────────────────────────────────────────── */
+.ig-modal-container {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* ── Header ───────────────────────────────────────────────────── */
+.ig-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 24px 18px;
+}
+
+.ig-modal__title-row {
+  display: flex;
+  gap: 16px;
+}
+
+.ig-modal__icon-bg {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 8px 16px -4px rgba(220, 39, 67, 0.35);
+  flex-shrink: 0;
+}
+
+.ig-modal__header-text {
+  flex: 1;
+}
+
+.ig-modal__title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+
+.ig-modal__subtitle {
+  font-size: 13.5px;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.ig-modal__close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  margin-top: -4px;
+  margin-right: -4px;
+}
+
+.ig-modal__close:hover {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* ── Body ─────────────────────────────────────────────────────── */
+.ig-modal__body {
+  padding: 0 24px 22px;
+}
+
+.ig-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ig-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ig-modal__field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ig-modal__field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.ig-modal__field-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #c13584;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.ig-modal__field-link:hover {
+  color: #9d2266;
+  text-decoration: underline;
+}
+
+.ig-modal__input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ig-modal__input {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.ig-modal__input:focus {
+  border-color: #d62976;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(214, 41, 118, 0.12);
+}
+
+.ig-modal__input.error {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.ig-modal__input-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: color 0.15s ease;
+}
+
+.ig-modal__input-toggle:hover {
+  color: #475569;
+}
+
+.ig-modal__error-text {
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 2px;
+}
+
+/* ── Info Box ─────────────────────────────────────────────────── */
+.ig-modal__info-box {
+  display: flex;
+  gap: 12px;
+  background: #fdf2f8;
+  border: 1px solid #fbcfe8;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.ig-modal__info-icon {
+  color: #db2777;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ig-modal__info-text {
+  font-size: 12.5px;
+  color: #831843;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Status Messages ──────────────────────────────────────────── */
+.ig-modal__status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13.5px;
+}
+
+.ig-modal__status.checking {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.ig-modal__status.failed {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  align-items: flex-start;
+}
+
+.ig-modal__spinner {
+  animation: igSpin 1s linear infinite;
+  color: #db2777;
+}
+
+@keyframes igSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ig-modal__status-content {
+  flex: 1;
+}
+
+.ig-modal__status-content p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.ig-modal__hint {
+  font-size: 12px;
+  color: #7f1d1d;
+  margin-top: 4px !important;
+  font-weight: normal !important;
+}
+
+/* ── Success state ────────────────────────────────────────────── */
+.ig-modal__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px 8px;
+}
+
+.ig-modal__success-icon {
+  width: 60px;
+  height: 60px;
+  background: #f0fdf4;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #16a34a;
+  margin-bottom: 12px;
+}
+
+.ig-modal__success-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 14px;
+}
+
+.ig-modal__preview-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px 18px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.ig-modal__preview-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.ig-modal__preview-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.ig-modal__preview-name {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.ig-modal__preview-meta {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* ── Footer ───────────────────────────────────────────────────── */
+.ig-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+}
+
+.ig-modal__footer-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ig-modal__secure-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #475569;
+  text-transform: uppercase;
+}
+
+.ig-modal__secure-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+}
+
+.ig-modal__footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ig-modal__btn-cancel {
+  padding: 9px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ig-modal__btn-cancel:hover:not(:disabled) {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.ig-modal__btn-connect {
+  padding: 9px 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #e1306c 0%, #c13584 100%);
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(225, 48, 108, 0.3);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ig-modal__btn-connect:hover:not(:disabled) {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(225, 48, 108, 0.4);
+}
+
+.ig-modal__btn-connect:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

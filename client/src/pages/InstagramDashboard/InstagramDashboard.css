@@ -59,6 +59,12 @@
   border: 1px solid #cce8d6;
 }
 
+.ig-connected-pill.disconnected {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
 .ig-brand-stats {
   color: #65676b;
   font-size: 0.9rem;
