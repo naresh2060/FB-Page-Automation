@@ -20,6 +20,8 @@ import {
   addFacebook,
   getFacebookPage,
   getPageList,
+  facebookCallback,
+  test,
 } from "../controllers/facebookController.js";
 
 const router = express.Router();
@@ -34,6 +36,8 @@ const upload = multer({
   },
 });
 
+
+
 // All routes protected
 router.use(authenticate);
 
@@ -45,6 +49,8 @@ router.get("/getPage", getFacebookPage);
 router.get("/pages", getPageList);
 
 router.get("/postlist", getPagePostsList);  //working
+
+// router.get("/test",test)
 
 
 

@@ -1,4 +1,4 @@
-import React from 'react';
+  import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Calendar from './components/Calendar/Calendar';
@@ -11,6 +11,7 @@ import InstagramDashboard from './pages/InstagramDashboard/InstagramDashboard';
 import MainLayout from './layout/MainLayout/MainLayout';
 import ContentManager from './pages/Content/ContentManager';
 import useAuthStore from './store/useAuthStore';
+import AuthSuccess from './pages/Auth/AuthSuccess';
 import './App.css';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+            <Route path="/auth/success" element={<AuthSuccess />} />
         </Route>
 
         {/* Protected Routes */}
@@ -48,7 +50,7 @@ function App() {
         </Route>
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );

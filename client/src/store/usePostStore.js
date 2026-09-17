@@ -1,10 +1,10 @@
 import { create } from 'zustand';
-import { 
-    generatePost, 
-    generateImage, 
-    getPosts, 
-    publishToFacebook, 
-    deletePost as deletePostApi, 
+import {
+    generatePost,
+    generateImage,
+    getPosts,
+    publishToFacebook,
+    deletePost as deletePostApi,
     getPostInsightsApi,
     updatePost,
     createPost,
@@ -29,15 +29,15 @@ const usePostStore = create((set, get) => ({
     // ── Modal Actions ─────────────────────────────────────────────
     openCreate: () => set({ isCreateOpen: true, error: null }),
     closeCreate: () => set({ isCreateOpen: false, error: null }),
-    openEdit: (post) => set({ 
-        isPreviewOpen: true, 
-        previewData: post, 
-        isEditMode: true, 
-        error: null 
+    openEdit: (post) => set({
+        isPreviewOpen: true,
+        previewData: post,
+        isEditMode: true,
+        error: null
     }),
     closePreview: () => set({
-        isPreviewOpen: false, 
-        previewData: null, 
+        isPreviewOpen: false,
+        previewData: null,
         isEditMode: false,
         isImageLoading: false,
         imageError: null,
@@ -92,13 +92,13 @@ const usePostStore = create((set, get) => ({
     // ── Generate Image ─────────────────────────────────────────────
     handleGenerateImage: async (imagePrompt) => {
         const { previewData } = get();
-        
+
         set({ isImageLoading: true, imageError: null });
 
         try {
-            const data = await generateImage({ 
+            const data = await generateImage({
                 postId: previewData?._id, // MongoDB use _id
-                imagePrompt: imagePrompt, 
+                imagePrompt: imagePrompt,
             });
             // data = { imageUrl: "https://cloudinary.com/..." }
 
@@ -142,9 +142,9 @@ const usePostStore = create((set, get) => ({
 
     userPosts: [],
     isFetchingUserPosts: false,
-    fetchUserPostsError : null,
+    fetchUserPostsError: null,
     fetchUserPosts: async (params = {}) => {
-        set({isFetchingUserPosts: true});
+        set({ isFetchingUserPosts: true });
 
         try {
             const response = await getPosts(params);
@@ -152,10 +152,10 @@ const usePostStore = create((set, get) => ({
                 ? response
                 : response?.posts || response?.data || [];
 
-                set({
-                    userPosts : rawPosts,
-                    isFetchingUserPosts:false
-                })
+            set({
+                userPosts: rawPosts,
+                isFetchingUserPosts: false
+            })
 
         } catch (err) {
             set({
@@ -262,10 +262,10 @@ const usePostStore = create((set, get) => ({
         try {
             const data = await getPostInsightsApi(fbPostId);
             // data = { success: true, insights: { impressions: X, clicks: Y, etc } }
-            
+
             // Update the post in the store with new insight data
             set((state) => ({
-                posts: state.posts.map((p) => 
+                posts: state.posts.map((p) =>
                     p.facebookPostId === fbPostId ? { ...p, views: data.insights?.post_impressions?.[0]?.value || 0 } : p
                 ),
                 isFetchingInsights: false
@@ -303,7 +303,7 @@ const usePostStore = create((set, get) => ({
                     if (asNew) {
                         newPosts = [savedPost, ...state.posts];
                     } else {
-                        newPosts = state.posts.map(p => 
+                        newPosts = state.posts.map(p =>
                             p._id === previewData._id ? savedPost : p
                         );
                     }

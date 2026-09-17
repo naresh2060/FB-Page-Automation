@@ -6,7 +6,23 @@
 }
 
 .dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 24px;
+}
+
+.profile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
 }
 
 .dashboard-title {
@@ -397,6 +413,25 @@
   font-size: 13px;
   line-height: 1.5;
   color: var(--text-main);
+}
+
+.profile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eee;
+}
+
+.profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
 }
 
 .ig-text { color: #E4405F; }
