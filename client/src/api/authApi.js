@@ -1,7 +1,8 @@
 // api/authApi.js
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_URL; // http://localhost:5000
+const apiVersion = import.meta.env.VITE_API_VERSION || 'v1';
+const BASE_URL = `${import.meta.env.VITE_API_URL}/api/${apiVersion}`; // http://localhost:5000/api/v1
 
 
 // ── Helper — get token from localStorage ─────────────────────────

@@ -17,7 +17,7 @@ const usePlatformStore = create(
       connectFacebook: async ({ pageId, accessToken }) => {
         set({ status: "checking", error: null, pageInfo: null, tokenInfo: null });
         try {
-          const data = await api.post("/api/facebook/add", {
+          const data = await api.post("/facebook/add", {
             pageId,
             accessToken,
           });
@@ -53,7 +53,7 @@ const usePlatformStore = create(
         set({ loading: true, error: null });
 
         try {
-          const res = await api.get("/api/facebook/getPage");
+          const res = await api.get("/facebook/getPage");
 
           const data = res.data;
 

@@ -17,7 +17,7 @@ const seedDefaultUser = async () => {
                 role: "admin",
                 plan: "enterprise"
             });
-            console.log("Default user seeded: test@gmail.com");
+            console.log("Default user seeded. Username:test@gmail.com, Password:test@gmail.com");
         }
     } catch (error) {
         console.error("Error seeding default user:", error.message);

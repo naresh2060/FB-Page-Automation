@@ -1,6 +1,6 @@
 import express from 'express';
-import Post from '../../models/Post.js';
-import * as postServices from '../../services/postServices.js';
+import Post from '../../../models/Post.js';
+import * as postServices from '../../../services/postServices.js';
 
 const router = express.Router();
 

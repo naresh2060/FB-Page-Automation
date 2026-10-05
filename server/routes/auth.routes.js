@@ -1,9 +1,22 @@
 import express from 'express';
-import User from '../../models/User.js';
-import { generateToken } from '../../services/authService.js';
-import { authenticate } from '../../middlewares/authenticate.js'; 
+import User from '../models/User.js';
+import { generateToken } from '../services/authService.js';
+import { authenticate } from '../middlewares/authenticate.js';
+import { handleFacebookCallback } from '../controllers/authController.js';
 
 const router = express.Router();
+
+// ─── Get Current User (Protected) ────────────────────────────
+router.get('/me', authenticate, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password'); // exclude password
+    res.json({ success: true, user });
+  // console.log(user)
+
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+}); 
 
 // ─── Register ────────────────────────────────────────────────
 router.post('/register', async (req, res) => {
@@ -94,31 +107,16 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// ─── Get Current User (Protected) ────────────────────────────
-router.get('/me', authenticate, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select('-password'); // exclude password
-    res.json({ success: true, user });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
+
 
 // ─── Logout ──────────────────────────────────────────────────
 router.post('/logout', (req, res) => {
   res.json({ success: true, message: 'Logged out successfully' });
 });
 
-// ─── Forgot Password ─────────────────────────────────────────
-router.post('/forgot-password', async (req, res) => {
-  // Placeholder logic
-  res.json({ success: true, message: 'If that email exists, a reset link has been sent' });
-});
 
-// ─── Reset Password ──────────────────────────────────────────
-router.post('/reset-password', async (req, res) => {
-  // Placeholder logic
-  res.json({ success: true, message: 'Password reset successfully' });
-});
+
+router.get("/facebook/callback", handleFacebookCallback);
+
 
 export default router;

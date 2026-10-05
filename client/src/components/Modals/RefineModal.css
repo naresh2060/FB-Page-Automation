@@ -296,7 +296,9 @@
   transition: background 0.15s;
 }
 
-.edit-prompt-btn:hover { background: #f3f4f6; }
+.edit-prompt-btn:hover {
+  background: #f3f4f6;
+}
 
 /* ── Editable prompt textarea ── */
 .prompt-textarea {
@@ -334,11 +336,25 @@
   color: #6b7280;
 }
 
-.image-loading p    { font-size: 13px; font-weight: 500; margin: 0; }
-.image-loading span { font-size: 12px; }
+.image-loading p {
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0;
+}
 
-.spin-icon { animation: spin 1s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.image-loading span {
+  font-size: 12px;
+}
+
+.spin-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* ── Error state ── */
 .image-error {
@@ -349,7 +365,11 @@
   padding: 20px;
 }
 
-.image-error p { font-size: 13px; color: #dc2626; text-align: center; }
+.image-error p {
+  font-size: 13px;
+  color: #dc2626;
+  text-align: center;
+}
 
 .retry-btn {
   font-size: 12px;
@@ -392,7 +412,9 @@
   transition: background 0.15s;
 }
 
-.regenerate-img-btn:hover { background: #f3f4f6; }
+.regenerate-img-btn:hover {
+  background: #f3f4f6;
+}
 
 /* ── Save Options UI ── */
 .save-options-group {
@@ -445,18 +467,19 @@
 }
 
 .footer-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-/* ── Title Edit Section ── */
-.title-edit-section {
+  /* ── Title Edit Section ── */
+  .title-edit-section {
     margin-bottom: 24px;
     padding-bottom: 20px;
     border-bottom: 1px dashed #e2e8f0;
-}
+  }
 
-.topic-input {
+  .topic-input {
     width: 100%;
     margin-top: 10px;
     padding: 12px 16px;
@@ -468,35 +491,35 @@
     background-color: #f8fafc;
     transition: all 0.2s;
     outline: none;
-}
+  }
 
-.topic-input:focus {
+  .topic-input:focus {
     border-color: #6366f1;
     background-color: white;
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-}
+  }
 
-/* ── Refine Theme UI ── */
-.theme-selection-section {
+  /* ── Refine Theme UI ── */
+  .theme-selection-section {
     margin-bottom: 24px;
-}
+  }
 
-.small-label {
+  .small-label {
     font-size: 11px;
     font-weight: 700;
     color: #94a3b8;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 8px;
-}
+  }
 
-.theme-chips-mini {
+  .theme-chips-mini {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-}
+  }
 
-.theme-chip-mini {
+  .theme-chip-mini {
     padding: 6px 12px;
     border-radius: 8px;
     font-size: 12px;
@@ -506,13 +529,226 @@
     border: none;
     cursor: pointer;
     transition: all 0.2s;
-}
+  }
 
-.theme-chip-mini:hover {
+  .theme-chip-mini:hover {
     background-color: #e2e8f0;
-}
+  }
 
-.theme-chip-mini.active {
+  .theme-chip-mini.active {
     background-color: #6366f1;
     color: white;
+  }
+
+/* ── Feedback Banner ── */
+.refine-feedback-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  border-bottom: 1px solid transparent;
+}
+
+.refine-feedback-banner.error {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.refine-feedback-banner.success {
+  background-color: #f0fdf4;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.refine-feedback-banner.info {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.feedback-dismiss {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: inherit;
+  opacity: 0.6;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+}
+
+.feedback-dismiss:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* ── Platform Selection Section ── */
+.platforms-selection-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.platforms-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.platform-count-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  background: #eef2ff;
+  color: #4f46e5;
+  border-radius: 12px;
+  margin-left: 4px;
+}
+
+.btn-toggle-all-platforms {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6366f1;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-toggle-all-platforms:hover {
+  background: #f1f5f9;
+  text-decoration: underline;
+}
+
+.platform-checkboxes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.platform-checkbox-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.platform-checkbox-card:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.platform-checkbox-card.selected {
+  background: #ffffff;
+  border-color: #6366f1;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);
+}
+
+.platform-native-checkbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.platform-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.platform-checkbox-card.selected .platform-card-icon {
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.15);
+}
+
+.platform-card-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.platform-card-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.platform-card-badge {
+  font-size: 10.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.platform-custom-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid #cbd5e1;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.platform-custom-checkbox.checked {
+  background: #6366f1;
+  border-color: #6366f1;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+}
+
+/* ── Publish Now Modal Button ── */
+.publish-now-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.28);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.publish-now-modal-btn:hover:not(:disabled) {
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.38);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.publish-now-modal-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.publish-now-modal-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }

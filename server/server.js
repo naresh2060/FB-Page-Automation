@@ -7,13 +7,8 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import connectDB from './config/db.js';
-import postsRouter from './api/posts/posts.js';
-import authRoutes from './api/auth/auth.js';
-import { authenticate } from './middlewares/authenticate.js';
-// import postRoutes from './api/posts/posts.js';        // ✅ add this
-// import platformRoutes from './routes/platformRoutes.js'
-import facebookRoutes from "./routes/facebook.routes.js";
-import postRoutes from "./routes/post.routes.js";
+import apiRoutes from './routes/index.js';
+
 
 
 
@@ -23,16 +18,13 @@ const app = express();
 connectDB();
 
 //Middlewares
-app.use(cors())
-app.use(express.json());
+app.use(cors())   // cors policy
+app.use(express.json());  //to parse JSON request body
 app.use(express.urlencoded({ extended: true }));
 
 //Routes
-app.use('/api/auth', authRoutes);
-// app.use('/api/posts', authenticate, postRoutes); // ✅ protect post routes
-// app.use('/api/platforms', platformRoutes);
-app.use("/api/facebook", facebookRoutes);
-app.use("/api/posts", authenticate, postRoutes)
+const API_VERSION = process.env.API_VERSION || 'v1';
+app.use(`/api/${API_VERSION}`, apiRoutes);
 
 
 

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
   TrendingUp, TrendingDown,
-  FileText, ExternalLink, Calendar, Sparkles, Eye
+  FileText, ExternalLink, Calendar, Sparkles, Eye, ChevronDown
 } from 'lucide-react';
 import './FacebookDashboard.css';
 import ConnectFacebookModal from '../../components/Modals/ConnectFacebookModal';
-import usePlatformStore     from '../../store/usePlatformStore';
-import usePostStore         from '../../store/usePostStore';
+import usePlatformStore from '../../store/usePlatformStore';
+import usePostStore from '../../store/usePostStore';
+import useDashboardStore from '../../store/useDashboardStore';
 
 const FacebookIcon = ({ size = 32, fill = "none", color = "currentColor" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill={fill}
@@ -27,35 +28,61 @@ const StatCard = ({ label, value, trendValue, isPositive }) => (
 );
 
 const FacebookDashboard = () => {
-  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('Overview');
+  const { user, fetchUser } = useDashboardStore();
+  const [selectedPage, setSelectedPage] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+
+
+  useEffect(() => {
+    const pages = user?.facebook?.pages;
+    if (pages?.length && !selectedPage) {
+      setSelectedPage(pages[0].pageId);
+    }
+
+  }, [user, selectedPage]);
 
   // ── Pull from store ──────────────────────────────────────────
-  const status    = usePlatformStore((s) => s.status);
-  const pageInfo  = usePlatformStore((s) => s.pageInfo);
   const tokenInfo = usePlatformStore((s) => s.tokenInfo);
   const disconnect = usePlatformStore((s) => s.disconnect);
 
-  const isConnected = status === "connected" && pageInfo !== null;
+  const hasPages = user?.facebook?.pages?.length > 0;
+  const isConnected = hasPages;
+  const selectedData = user?.facebook?.pages?.find((p) => p.pageId === selectedPage);
+
+  const displayPageInfo = selectedData ? {
+    name: selectedData.name,
+    category: selectedData.category,
+    picture: selectedData.profilePicture,
+    fanCount: selectedData.fanCount || 0,
+    verified: selectedData.verified || true,
+    link: selectedData.link || `https://facebook.com/${selectedData.pageId}`,
+  } : null;
 
   // ── Post store for Posts tab ─────────────────────────────────
-  const { posts, isFetchingPosts, fetchPosts, fetchPostInsights } = usePostStore();
+  const { posts, isFetchingPosts, fetchPosts, fetchPostInsights, } = usePostStore();
   const publishedPosts = posts.filter(p => p.status === 'posted');
 
   useEffect(() => {
     if (activeTab === 'Posts' && isConnected) {
       const loadPostsAndInsights = async () => {
         await fetchPosts({ page: 1, limit: 50 });
-        
+
         // After fetching posts, fetch insights for each published post that has a facebookPostId
         const currentPosts = usePostStore.getState().posts;
         const postedOnFb = currentPosts.filter(p => p.status === 'posted' && p.facebookPostId);
-        
+
         // Fetch insights in parallel (with some concurrency control if needed, but for now simple Promise.all)
         // Note: For a real app with many posts, you'd want a batch API or a more optimized approach.
         Promise.all(postedOnFb.map(post => fetchPostInsights(post.facebookPostId)));
       };
-      
+
       loadPostsAndInsights();
     }
   }, [activeTab, isConnected, fetchPosts, fetchPostInsights]);
@@ -63,26 +90,26 @@ const FacebookDashboard = () => {
   // ── Stats — live data when connected, placeholders otherwise ─
   const stats = [
     {
-      label:      'Page followers',
-      value:      isConnected ? pageInfo.fanCount.toLocaleString() : '—',
+      label: 'Page followers',
+      value: isConnected && displayPageInfo ? displayPageInfo.fanCount.toLocaleString() : '—',
       trendValue: '+312',
       isPositive: true,
     },
     {
-      label:      'Post reach',
-      value:      '42.1K',
+      label: 'Post reach',
+      value: '42.1K',
       trendValue: '+9%',
       isPositive: true,
     },
     {
-      label:      'Engagement rate',
-      value:      '5.2%',
+      label: 'Engagement rate',
+      value: '5.2%',
       trendValue: '+0.8% vs avg',
       isPositive: true,
     },
     {
-      label:      'Link clicks',
-      value:      '1,830',
+      label: 'Link clicks',
+      value: '1,830',
       trendValue: '-4%',
       isPositive: false,
     },
@@ -95,8 +122,10 @@ const FacebookDashboard = () => {
     { range: '25-34 yrs', percentage: 38 },
     { range: '35-44 yrs', percentage: 27 },
     { range: '18-24 yrs', percentage: 21 },
-    { range: '45+ yrs',   percentage: 14 },
+    { range: '45+ yrs', percentage: 14 },
   ];
+
+
 
   return (
     <div className="fb-dashboard">
@@ -107,10 +136,10 @@ const FacebookDashboard = () => {
 
           {/* Avatar */}
           <div className="fb-brand-avatar">
-            {isConnected && pageInfo?.picture ? (
+            {isConnected && displayPageInfo?.picture ? (
               <img
-                src={pageInfo.picture}
-                alt={pageInfo.name}
+                src={displayPageInfo.picture}
+                alt={displayPageInfo.name}
                 style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
               />
             ) : (
@@ -120,49 +149,149 @@ const FacebookDashboard = () => {
 
           {/* Brand name + meta */}
           <div className="fb-brand-details">
-            <div className="fb-brand-name">
-              {isConnected && pageInfo?.name
-                ? `${pageInfo.name} — Facebook`
-                : 'Your Page — Facebook'}
-            </div>
+            {user?.facebook?.pages?.length > 0 ? (
+              <div style={{ position: "relative" }}>
+                <div
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "6px 12px",
+                    borderRadius: "8px",
+                    border: "1px solid #e2e8f0",
+                    backgroundColor: "#fff",
+                    color: "#1e293b",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    userSelect: "none"
+                  }}
+                >
+                  {(() => {
+                    const selectedData = user.facebook.pages.find((p) => p.pageId === selectedPage);
+                    return (
+                      <>
+                        {selectedData?.profilePicture ? (
+                          <img
+                            src={selectedData.profilePicture}
+                            alt="page"
+                            style={{ width: "24px", height: "24px", borderRadius: "50%", objectFit: "cover" }}
+                          />
+                        ) : (
+                          <div
+                            style={{
+                              width: "24px",
+                              height: "24px",
+                              borderRadius: "50%",
+                              backgroundColor: "#e2e8f0",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "12px",
+                              color: "#64748b"
+                            }}
+                          >
+                            {selectedData?.name?.charAt(0) || "P"}
+                          </div>
+                        )}
+                        <span>{selectedData?.name || "Select a page"}</span>
+                        <ChevronDown size={16} color="#64748b" />
+                      </>
+                    );
+                  })()}
+                </div>
+
+                {isDropdownOpen && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      right: 0,
+                      marginTop: "4px",
+                      backgroundColor: "#fff",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                      zIndex: 10,
+                      maxHeight: "250px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    {user.facebook.pages.map((page) => (
+                      <div
+                        key={page.pageId}
+                        onClick={() => {
+                          setSelectedPage(page.pageId);
+                          setIsDropdownOpen(false);
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          padding: "8px 12px",
+                          cursor: "pointer",
+                          backgroundColor: selectedPage === page.pageId ? "#f8fafc" : "transparent",
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f1f5f9")}
+                        onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor =
+                          selectedPage === page.pageId ? "#f8fafc" : "transparent")
+                        }
+                      >
+                        {page.profilePicture ? (
+                          <img
+                            src={page.profilePicture}
+                            alt="page"
+                            style={{ width: "24px", height: "24px", borderRadius: "50%", objectFit: "cover" }}
+                          />
+                        ) : (
+                          <div
+                            style={{
+                              width: "24px",
+                              height: "24px",
+                              borderRadius: "50%",
+                              backgroundColor: "#e2e8f0",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "12px",
+                              color: "#64748b"
+                            }}
+                          >
+                            {page.name?.charAt(0) || "P"}
+                          </div>
+                        )}
+                        <span style={{ fontSize: "14px", fontWeight: "500", color: "#1e293b" }}>{page.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="fb-brand-name">
+                No Pages Linked
+              </div>
+            )}
             <div className="fb-brand-stats">
-              {isConnected && pageInfo
-                ? `${pageInfo.fanCount?.toLocaleString() ?? 0} followers · ${pageInfo.category ?? 'Facebook Page'} · ${tokenInfo?.isLongLived ? 'Long-lived token' : 'Token expires ' + new Date(tokenInfo?.expiresAt).toLocaleDateString()}`
-                : 'Connect your Facebook page to see live data'}
+              {hasPages
+                ? isConnected && displayPageInfo
+                  ? `${displayPageInfo.fanCount?.toLocaleString() ?? 0} followers · ${displayPageInfo.category ?? 'Facebook Page'} · ${tokenInfo?.isLongLived ? 'Long-lived token' : 'Token'}`
+                  : 'Select a page to view live data'
+                : 'Please link your Facebook pages to start managing them.'}
             </div>
           </div>
 
-          {/* Not connected — prompt */}
-          {!isConnected && (
-            <div className="fb-not-connected-banner">
-              <span>No page connected</span>
-              <button
-                className="fb-connect-btn"
-                onClick={() => setIsConnectModalOpen(true)}
-              >
-                Connect Facebook
-              </button>
-            </div>
-          )}
+
 
           {/* Connected — reconnect + disconnect */}
           {isConnected && (
             <div className="fb-connected-actions">
-              {pageInfo.verified && (
+              {displayPageInfo?.verified && (
                 <span className="fb-verified-pill">✓ Verified</span>
               )}
-              <button
-                className="fb-reconnect-btn"
-                onClick={() => setIsConnectModalOpen(true)}
-              >
-                Reconnect
-              </button>
-              <button
-                className="fb-disconnect-btn"
-                onClick={disconnect}
-              >
-                Disconnect
-              </button>
+
+
             </div>
           )}
         </div>
@@ -188,7 +317,6 @@ const FacebookDashboard = () => {
           <p>Enter your page access token and page ID to start managing posts, viewing analytics, and automating your Facebook presence.</p>
           <button
             className="fb-connect-btn-large"
-            onClick={() => setIsConnectModalOpen(true)}
           >
             Connect Facebook Page
           </button>
@@ -285,7 +413,7 @@ const FacebookDashboard = () => {
                       <div key={i} className="fb-bar-wrapper">
                         <div className="fb-bar" style={{ height: `${h}%` }} />
                         <span className="fb-bar-label">
-                          {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i]}
+                          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i]}
                         </span>
                       </div>
                     ))}
@@ -353,27 +481,27 @@ const FacebookDashboard = () => {
                 <span className="fb-online-dot" title="Connected" />
               </div>
               <div className="fb-connected-info">
-                {pageInfo.picture && (
+                {displayPageInfo?.picture && (
                   <img
-                    src={pageInfo.picture}
-                    alt={pageInfo.name}
+                    src={displayPageInfo.picture}
+                    alt={displayPageInfo.name}
                     className="fb-connected-avatar"
                   />
                 )}
                 <div>
-                  <div className="fb-connected-name">{pageInfo.name}</div>
+                  <div className="fb-connected-name">{displayPageInfo?.name}</div>
                   <div className="fb-connected-meta">
-                    {pageInfo.category && <span>{pageInfo.category}</span>}
-                    {pageInfo.fanCount > 0 && (
-                      <span> · {pageInfo.fanCount.toLocaleString()} followers</span>
+                    {displayPageInfo?.category && <span>{displayPageInfo.category}</span>}
+                    {displayPageInfo?.fanCount > 0 && (
+                      <span> · {displayPageInfo.fanCount.toLocaleString()} followers</span>
                     )}
                   </div>
-                  {pageInfo.verified && (
+                  {displayPageInfo?.verified && (
                     <span className="fb-verified-badge">✓ Verified</span>
                   )}
-                  {pageInfo.link && (
+                  {displayPageInfo?.link && (
                     <a
-                      href={pageInfo.link}
+                      href={displayPageInfo.link}
                       target="_blank"
                       rel="noreferrer"
                       className="fb-page-link"
@@ -462,11 +590,7 @@ const FacebookDashboard = () => {
       )}
 
       {/* ── Modal ── */}
-      <ConnectFacebookModal
-        isOpen={isConnectModalOpen}
-        onClose={() => setIsConnectModalOpen(false)}
-        onConnected={() => setIsConnectModalOpen(false)}
-      />
+
     </div>
   );
 };

@@ -1,13 +1,14 @@
 import { create } from 'zustand';
-import { 
-    generatePost, 
-    generateImage, 
-    getPosts, 
-    publishToFacebook, 
-    deletePost as deletePostApi, 
+import {
+    generatePost,
+    generateImage,
+    getPosts,
+    publishToFacebook,
+    deletePost as deletePostApi,
     getPostInsightsApi,
     updatePost,
-    createPost
+    createPost,
+    getFacebookPostList
 } from '../api/postApi.js';
 
 const usePostStore = create((set, get) => ({
@@ -28,15 +29,15 @@ const usePostStore = create((set, get) => ({
     // ── Modal Actions ─────────────────────────────────────────────
     openCreate: () => set({ isCreateOpen: true, error: null }),
     closeCreate: () => set({ isCreateOpen: false, error: null }),
-    openEdit: (post) => set({ 
-        isPreviewOpen: true, 
-        previewData: post, 
-        isEditMode: true, 
-        error: null 
+    openEdit: (post) => set({
+        isPreviewOpen: true,
+        previewData: post,
+        isEditMode: true,
+        error: null
     }),
     closePreview: () => set({
-        isPreviewOpen: false, 
-        previewData: null, 
+        isPreviewOpen: false,
+        previewData: null,
         isEditMode: false,
         isImageLoading: false,
         imageError: null,
@@ -91,13 +92,13 @@ const usePostStore = create((set, get) => ({
     // ── Generate Image ─────────────────────────────────────────────
     handleGenerateImage: async (imagePrompt) => {
         const { previewData } = get();
-        
+
         set({ isImageLoading: true, imageError: null });
 
         try {
-            const data = await generateImage({ 
+            const data = await generateImage({
                 postId: previewData?._id, // MongoDB use _id
-                imagePrompt: imagePrompt, 
+                imagePrompt: imagePrompt,
             });
             // data = { imageUrl: "https://cloudinary.com/..." }
 
@@ -121,22 +122,86 @@ const usePostStore = create((set, get) => ({
     isFetchingPosts: false,
     fetchPostsError: null,
 
+    // fetchPosts: async (params = {}) => {
+    //     set({ isFetchingPosts: true, fetchPostsError: null });
+    //     try {
+    //         const data = await getPosts(params);
+    //         set({
+    //             posts: data.posts,
+    //             pagination: data.pagination,
+    //             isFetchingPosts: false
+    //         });
+    //     } catch (err) {
+    //         set({
+    //             fetchPostsError: err.message || "Failed to fetch posts",
+    //             isFetchingPosts: false
+    //         });
+    //     }
+    // },
+
+
+    userPosts: [],
+    isFetchingUserPosts: false,
+    fetchUserPostsError: null,
+    fetchUserPosts: async (params = {}) => {
+        set({ isFetchingUserPosts: true });
+
+        try {
+            const response = await getPosts(params);
+            const rawPosts = Array.isArray(response)
+                ? response
+                : response?.posts || response?.data || [];
+
+            set({
+                userPosts: rawPosts,
+                isFetchingUserPosts: false
+            })
+
+        } catch (err) {
+            set({
+                fetchUserPostsError: err.message || 'Failed to fetch User posts from Database',
+                isFetchingUserPosts: false
+            });
+        }
+    },
+
+
     fetchPosts: async (params = {}) => {
         set({ isFetchingPosts: true, fetchPostsError: null });
         try {
-            const data = await getPosts(params);
+            const response = await getFacebookPostList(params);
+            const rawPosts = Array.isArray(response)
+                ? response
+                : response?.posts || response?.data || [];
+
+            // Map Facebook API format to local DB format so UI components (FacebookDashboard, ContentManager) don't break
+            const normalizedPosts = rawPosts.map(fbPost => ({
+                _id: fbPost.id,
+                facebookPostId: fbPost.id,
+                content: fbPost.message || fbPost.story || '',
+                topic: fbPost.message ? fbPost.message.substring(0, 30) + '...' : 'Facebook Post',
+                imageUrl: fbPost.full_picture || null,
+                status: 'posted', // FB posts are already published
+                postedAt: fbPost.created_time,
+                createdAt: fbPost.created_time,
+                views: fbPost.shares?.count || 0,
+                likes: fbPost.likes?.summary?.total_count || 0,
+                commentsCount: fbPost.comments?.summary?.total_count || 0,
+                permalink_url: fbPost.permalink_url,
+            }));
+
             set({
-                posts: data.posts,
-                pagination: data.pagination,
+                posts: normalizedPosts,
                 isFetchingPosts: false
             });
         } catch (err) {
             set({
-                fetchPostsError: err.message || "Failed to fetch posts",
+                fetchPostsError: err.message || 'Failed to fetch Facebook posts',
                 isFetchingPosts: false
             });
         }
     },
+
 
     // ── Publish to Facebook ────────────────────────────────────────
     isPublishing: false,
@@ -197,10 +262,10 @@ const usePostStore = create((set, get) => ({
         try {
             const data = await getPostInsightsApi(fbPostId);
             // data = { success: true, insights: { impressions: X, clicks: Y, etc } }
-            
+
             // Update the post in the store with new insight data
             set((state) => ({
-                posts: state.posts.map((p) => 
+                posts: state.posts.map((p) =>
                     p.facebookPostId === fbPostId ? { ...p, views: data.insights?.post_impressions?.[0]?.value || 0 } : p
                 ),
                 isFetchingInsights: false
@@ -238,7 +303,7 @@ const usePostStore = create((set, get) => ({
                     if (asNew) {
                         newPosts = [savedPost, ...state.posts];
                     } else {
-                        newPosts = state.posts.map(p => 
+                        newPosts = state.posts.map(p =>
                             p._id === previewData._id ? savedPost : p
                         );
                     }

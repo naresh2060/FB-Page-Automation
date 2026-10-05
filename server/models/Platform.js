@@ -24,7 +24,7 @@ const platformSchema = new mongoose.Schema(
       required: true,
       select: false, // hide from queries by default
     },
-
+    
     refreshToken: {
       type: String,
       required: false,
@@ -44,6 +44,7 @@ const platformSchema = new mongoose.Schema(
       picture:        { type: String }, // support both
       category:       { type: String },
       fanCount:       { type: Number, default: 0 },
+      mediaCount:       { type: Number, default: 0 },
       followersCount: { type: Number, default: 0 },
       verified:       { type: Boolean, default: false },
       link:           { type: String },

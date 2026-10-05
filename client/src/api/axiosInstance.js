@@ -1,8 +1,10 @@
 import axios from "axios";
 import useAuthStore from "../store/useAuthStore";
 
+const apiVersion = import.meta.env.VITE_API_VERSION || 'v1';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,   // from .env file
+  baseURL: `${import.meta.env.VITE_API_URL}/api/${apiVersion}`,
   headers: { "Content-Type": "application/json" },
 });
 
