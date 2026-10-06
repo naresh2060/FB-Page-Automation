@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import api from '../api/axiosInstance';
-import { getInstagramPostist } from '../api/instagramApi';
 
 const useInstagramStore = create(
   persist(
@@ -55,37 +54,6 @@ const useInstagramStore = create(
         }),
 
       isConnected: () => get().status === 'connected' && get().pageData !== null,
-
-      instagramPostList: [],
-      instagramPostListLoading: false,
-      instagramPostListError: null,
-
-      fetchInstagramPostList: async () => {
-        set({ instagramPostListLoading: true, instagramPostListError: null });
-
-        try {
-          const res = await getInstagramPostist();
-          const posts = (res.data?.data || res?.data || []).map(p => ({
-            id: p.id,
-            caption: p.caption,
-            media_url: p.media_url,
-            media_type: p.media_type,
-            thumbnail_url: p.thumbnail_url,
-            permalink: p.permalink,
-            timestamp: p.timestamp,
-          }));
-          set({ instagramPostList: posts, instagramPostListLoading: false, instagramPostListError: null })
-
-        } catch (err) {
-          set({
-            instagramPostListError: err.message, instagramPostListLoading: false
-          })
-        }
-      }
-
-
-
-
     }),
     {
       name: 'ig-platform',

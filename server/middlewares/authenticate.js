@@ -21,10 +21,10 @@ export const authenticate = async (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({ success: false, error: 'User not found' });
     }
+
     next();
 
   } catch (error) {
     return res.status(401).json({ success: false, error: 'Invalid or expired token' });
-    
   }
 };

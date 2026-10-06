@@ -24,15 +24,15 @@ const RefineModal = () => {
     isLoading,
   } = usePostStore();
 
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied]                   = useState(false);
   const [editableContent, setEditableContent] = useState('');
-  const [editableTopic, setEditableTopic] = useState('');
-  const [selectedTheme, setSelectedTheme] = useState(null);
+  const [editableTopic, setEditableTopic]     = useState('');
+  const [selectedTheme, setSelectedTheme]     = useState(null);
   const [showSaveOptions, setShowSaveOptions] = useState(false);
 
   // ── editable image prompt state ───────────────────────────────
   const [editableImagePrompt, setEditableImagePrompt] = useState('');
-  const [isEditingPrompt, setIsEditingPrompt] = useState(false);
+  const [isEditingPrompt, setIsEditingPrompt]         = useState(false);
 
   // sync local state when previewData changes
   useEffect(() => {
@@ -73,10 +73,10 @@ const RefineModal = () => {
 
   const onSave = async (asNew) => {
     const editedData = {
-      ...previewData,
-      topic: editableTopic,
-      content: editableContent,
-      imagePrompt: editableImagePrompt
+        ...previewData,
+        topic: editableTopic,
+        content: editableContent,
+        imagePrompt: editableImagePrompt
     };
     await handleSaveEditedPost(editedData, asNew);
   };
@@ -114,15 +114,15 @@ const RefineModal = () => {
 
                 {/* ── Left: Generated Text ── */}
                 <div className="generated-text-section">
-
+                  
                   {/* Title Field */}
                   <div className="title-edit-section">
                     <label className="label-with-icon">
                       <Edit3 size={14} />
                       <span>Post Title / Topic</span>
                     </label>
-                    <input
-                      type="text"
+                    <input 
+                      type="text" 
                       className="topic-input"
                       value={editableTopic}
                       onChange={(e) => setEditableTopic(e.target.value)}
@@ -299,8 +299,8 @@ const RefineModal = () => {
           <div className="modal-footer refine-footer">
             <div className="footer-left">
               {!isEditMode && (
-                <button
-                  className="regenerate-link"
+                <button 
+                  className="regenerate-link" 
                   onClick={handleRegenerateClick}
                   disabled={isLoading}
                 >
@@ -315,15 +315,15 @@ const RefineModal = () => {
                 <>
                   {showSaveOptions ? (
                     <div className="save-options-group">
-                      <button
-                        className="save-as-new-btn"
+                       <button 
+                        className="save-as-new-btn" 
                         onClick={() => onSave(true)}
                         disabled={isSaving}
                       >
                         {isSaving ? "Saving..." : "Save as New"}
                       </button>
-                      <button
-                        className="update-existing-btn gradient-bg"
+                      <button 
+                        className="update-existing-btn gradient-bg" 
                         onClick={() => onSave(false)}
                         disabled={isSaving}
                       >

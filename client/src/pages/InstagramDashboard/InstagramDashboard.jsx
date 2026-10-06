@@ -9,9 +9,7 @@ import {
 } from 'lucide-react';
 import './InstagramDashboard.css';
 import ConnectInstagramModal from '../../components/Modals/ConnectInstagramModal';
-import PostsAndReelsTab from './PostsAndReelsTab';
 import useInstagramStore from '../../store/useInstagramStore';
-
 
 const InstagramIcon = ({ size = 32 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -134,10 +132,6 @@ const InstagramDashboard = () => {
       </header>
 
       {/* ── Dashboard Content ── */}
-      {activeTab === 'Posts & Reels' && (
-        <PostsAndReelsTab onOpenCreateModal={() => {}} />
-      )}
-
       {activeTab === 'Overview' && (
         <div className="ig-grid">
           <div className="ig-main-col">
