@@ -21,7 +21,6 @@ import {
   encryptToken,
   decryptToken,
   uploadPhotoFromUrl,
-  handleFacebookCallbackService,
 } from "../services/facebookServices.js";
 
 
@@ -195,14 +194,12 @@ const getFbPlatform = async (userId) => {
   if (platform.accessToken) {
     try {
       platform.accessToken = decryptToken(platform.accessToken);
-
     } catch (err) {
       console.error("Token decryption failed:", err);
       // If decryption fails, it might be an unencrypted token or wrong key
       // We'll leave it as is for now, but in production this should be handled
     }
   }
-  console.error("Token decrypted", platform.accessToken);
 
   return platform;
 };
@@ -802,25 +799,3 @@ export const connectFacebookPage = async (req, res) => {
     handleError(res, err);
   }
 };
-
-
-export const facebookCallback = async (req, res) => {
-  try {
-    const result = await handleFacebookCallbackService(req.query);
-
-    return res.redirect(
-      "http://localhost:5173/dashboard?connected=facebook"
-    );
-  } catch (error) {
-    console.error("Callback Error:", error);
-    return res.status(500).json({
-      message: "Facebook auth failed",
-      error: error.message,
-    });
-  }
-};
-
-
-export const test = async () => {
-  console.log("Calling API");
-}

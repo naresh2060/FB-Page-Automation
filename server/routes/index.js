@@ -1,5 +1,5 @@
 import express from "express";
-import authRoutes from "./auth.routes.js";
+import authRoutes from "../api/v1/auth/auth.js";
 import facebookRoutes from "./facebook.routes.js";
 import instagramRoutes from "./instagram.routes.js"
 import postRoutes from "./post.routes.js";

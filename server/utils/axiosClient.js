@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export const graphClient = axios.create({
-    baseURL: "https://graph.facebook.com/v25.0/",
+    baseURL: "http://graph.facebook.com/v25.0/",
 });
